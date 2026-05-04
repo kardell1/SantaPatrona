@@ -1,0 +1,10 @@
+{
+    "IAM": true,
+    "Products": true,
+    "Production": true,
+    "Sales": true,
+    "Budgeting": true,
+    "Account": true,
+    "Accounting": true,
+    "HumanResources": true
+}
