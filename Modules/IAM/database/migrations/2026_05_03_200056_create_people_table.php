@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create("people", function (Blueprint $table) {
             $table->id();
             $table->string("cellphone", 15)->unique();
-            // $table->string("email", 50)->unique();
+            $table->string("email", 50)->unique();
             $table->string("name", 50);
             // $table->string("dni", 15)->unique();
             $table->timestamps();

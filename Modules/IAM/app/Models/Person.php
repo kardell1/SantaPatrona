@@ -10,7 +10,7 @@ class Person extends Model
 {
     use HasFactory;
 
-    protected $fillable = ["cellphone", "name"];
+    protected $fillable = ["cellphone", "name" , "email"];
 
     public function profile()
     {

@@ -5,6 +5,7 @@ namespace Modules\Products\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Production\Models\MenuProduct;
+use Modules\Products\Models\MenuProduct as ModelsMenuProduct;
 
 // use Modules\Products\Database\Factories\MenuCategoryFactory;
 
@@ -16,6 +17,6 @@ class MenuCategory extends Model
 
     public function menuProducts()
     {
-        return $this->hasMany(MenuProduct::class);
+        return $this->hasMany(ModelsMenuProduct::class);
     }
 }

@@ -88,7 +88,7 @@ class EmployeesSeeder extends Seeder
             $found_role = Role::where("name", $employee["role"])->first();
 
             $new_user = User::create([
-                "email" => $employee["person"]["email"],
+                // "email" => $employee["person"]["email"],
                 "password" => $employee["auth"]["password"],
                 "username" => $employee["auth"]["username"],
                 "role_id" => $found_role->id,
@@ -102,7 +102,9 @@ class EmployeesSeeder extends Seeder
             $new_person = Person::create([
                 "name" => $employee["person"]["name"],
                 "cellphone" => $employee["person"]["cellphone"] . $index,
+                "email" => $employee["person"]["email"],
             ]);
+
             $new_person->personType()->attach($found_person_type->id);
             Profile::create([
                 "person_id" => $new_person->id,

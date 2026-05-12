@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Support\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Modules\Products\Http\Requests\MenuProductRequest;
+use Modules\Products\Models\MenuProduct;
 
 class MenuProductController extends Controller
 {
@@ -54,15 +56,39 @@ class MenuProductController extends Controller
 
         return ApiResponse::success($data, 200);
     }
-
-    public function store(Request $request) {}
-
-    public function show($id)
+    //
+    public function store(MenuProductRequest $request)
     {
-        return view("products::show");
+        $validated = $request->validated();
+
+        $newProduct = MenuProduct::create($validated);
+
+        return ApiResponse::success($newProduct, 201);
     }
+    //
+    public function show(MenuProduct $menuProduct)
+    {
+        return ApiResponse::success($menuProduct, 200);
+    }
+    //
+    public function update(
+        MenuProductRequest $request,
+        MenuProduct $menuProduct,
+    ) {
+        $validated = $request->validated();
 
-    public function update(Request $request, $id) {}
+        $menuProduct->update($validated);
 
-    public function destroy($id) {}
+        return ApiResponse::success($menuProduct->fresh(), 200);
+    }
+    //
+    public function destroy(MenuProduct $menuProduct)
+    {
+        $menuProduct->delete();
+
+        return ApiResponse::success(
+            ["message" => "Producto eliminado correctamente"],
+            200,
+        );
+    }
 }

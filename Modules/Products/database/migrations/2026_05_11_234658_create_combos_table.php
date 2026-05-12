@@ -7,16 +7,15 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create("menu_categories", function (Blueprint $table) {
+        Schema::create("combos", function (Blueprint $table) {
             $table->id();
-            $table->string("name");
-            $table->string("code")->unique()->nullable();
+            $table->string("name")->unique();
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists("menu_categories");
+        Schema::dropIfExists("combos");
     }
 };
