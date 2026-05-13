@@ -8,6 +8,8 @@ use Modules\Products\Http\Controllers\MenuProductController;
 Route::prefix("v1")->group(function () {
     Route::post('combos', [ComboController::class , 'store']);
     // se declara las rutas aca,
+
+    Route::get('combos/{combos}', [ComboController::class , 'show']);
     // Route::get("products", function () {
     //     return response()->json([
     //         "status" => "ok",
