@@ -22,7 +22,7 @@ class MenuProductRequest extends FormRequest
             // fecha de expiracion
             "expired_date" => "required|date",
             // seleccion de la categoria
-            "menu_category_id" => "required|string|exists:menu_categories,id",
+            "menu_category_id" => "required|exists:menu_categories,id"
         ];
     }
 

@@ -10,13 +10,11 @@ class Combo extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     */
-    protected $fillable = [];
+    protected $fillable = ['name' , 'description' , 'status'];
 
-    // protected static function newFactory(): ComboFactory
-    // {
-    //     // return ComboFactory::new();
-    // }
+    public function menuProducts()
+    {
+        return $this->belongsToMany(MenuProduct::class);
+    }
+
 }

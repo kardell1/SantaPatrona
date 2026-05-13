@@ -59,12 +59,28 @@ class MenuProductController extends Controller
     //
     public function store(MenuProductRequest $request)
     {
-        $validated = $request->validated();
+        //return ApiResponse::success( "data" , 201);
+        try {
+            $validated = $request->validated();
 
-        $newProduct = MenuProduct::create($validated);
+            $newProduct = MenuProduct::create($validated);
 
-        return ApiResponse::success($newProduct, 201);
+            return ApiResponse::success($newProduct, 201);
+        } catch (\DomainException $e) {
+            return ApiResponse::error(
+                $e->getMessage(),
+                407,
+                "Error al crear el producto",
+            );
+        } catch (\Throwable $e) {
+            return ApiResponse::error(
+                $e->getMessage(),
+                500,
+                "Error interno del servidor",
+            );
+        }
     }
+
     //
     public function show(MenuProduct $menuProduct)
     {

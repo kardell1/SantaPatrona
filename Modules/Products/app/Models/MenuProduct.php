@@ -26,8 +26,14 @@ class MenuProduct extends Model
     {
         return $this->belongsTo(MenuCategory::class);
     }
+    //
     public function recipeBooks()
     {
         return $this->hasMany(RecipeBook::class);
+    }
+    //
+    public function combos()
+    {
+        return $this->belongsToMany(Combo::class);
     }
 }

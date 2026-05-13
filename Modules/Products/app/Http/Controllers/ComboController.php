@@ -3,54 +3,37 @@
 namespace Modules\Products\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Support\ApiResponse;
 use Illuminate\Http\Request;
+use Modules\Products\Http\Requests\ComboRequest;
+use Modules\Products\Models\Combo;
 
 class ComboController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return view('products::index');
+        $combos = Combo::all();
+
+        return ApiResponse::success($combos, 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(ComboRequest $request)
     {
-        return view('products::create');
+        // crear los combos
+        $validated = $request->validated();
+
+        Combo::create($validated);
+
+        return ApiResponse::success("Combo creado exitosamente", 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {}
-
-    /**
-     * Show the specified resource.
-     */
     public function show($id)
     {
         return view('products::show');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        return view('products::edit');
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id) {}
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id) {}
 }

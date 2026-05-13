@@ -1,10 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Products\Http\Controllers\ComboController;
 use Modules\Products\Http\Controllers\MenuCategoryController;
 use Modules\Products\Http\Controllers\MenuProductController;
 
 Route::prefix("v1")->group(function () {
+    Route::post('combos', [ComboController::class , 'store']);
     // se declara las rutas aca,
     // Route::get("products", function () {
     //     return response()->json([
@@ -13,7 +15,9 @@ Route::prefix("v1")->group(function () {
     //     ]);
     // });
     Route::get("products", [MenuProductController::class, "index"]);
+    //
     Route::post("products", [MenuProductController::class, "store"]);
+    //
     Route::get("products/{menuProduct}", [
         MenuProductController::class,
         "show",

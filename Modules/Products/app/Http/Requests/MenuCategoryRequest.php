@@ -13,13 +13,13 @@ class MenuCategoryRequest extends FormRequest
         ];
     }
 
-    public function messages():array
+    public function messages(): array
     {
         return [
             "category.required" => "Este campo es obligatorio",
             "category.string" => "formato invalido",
             "categroy.min" => "La nueva categoria debe ser mayor a 4 caracteres"
-        ]
+        ];
     }
 
     public function authorize(): bool
