@@ -13,26 +13,44 @@ class MenuProductController extends Controller
 {
     public function index(Request $request)
     {
-        $category = $request->input("category");
+        try {
 
-        $query = DB::table("menu_products as mp")
-            ->leftJoin(
-                "menu_categories as mc",
-                "mc.id",
-                "=",
-                "mp.menu_category_id",
-            )
-            ->leftJoin("recipe_books as rb", "mp.id", "=", "rb.menu_product_id")
-            ->leftJoin("raw_products as rp", "rp.id", "=", "rb.raw_product_id")
-            ->select(
-                "mc.name as menu_product_category",
-                "mp.id as menu_product_id",
-                "mp.name as menu_product_name",
-                "mp.manufacturing_cost as menu_product_manufacturing_cost",
-                DB::raw("
+            $category = $request->input("category");
+
+            $query = DB::table("menu_products as mp")
+                ->leftJoin(
+                    "menu_categories as mc",
+                    "mc.id",
+                    "=",
+                    "mp.menu_category_id",
+                )
+                ->leftJoin(
+                    "recipe_books as rb",
+                    "mp.id",
+                    "=",
+                    "rb.menu_product_id"
+                )
+                ->leftJoin(
+                    "raw_products as rp",
+                    "rp.id",
+                    "=",
+                    "rb.raw_product_id"
+                )
+                ->leftJoin(
+                    'menu_product_units as mpu',
+                    'mp.id',
+                    '=',
+                    'mpu.menu_product_id'
+                )
+                ->select(
+                    "mc.name as menu_product_category",
+                    "mp.id as menu_product_id",
+                    "mp.name as menu_product_name",
+
+                    DB::raw("
                     COALESCE(
                         json_agg(
-                            json_build_object(
+                            DISTINCT jsonb_build_object(
                                 'detail', rb.detail,
                                 'raw_product_name', rp.name
                             )
@@ -40,22 +58,47 @@ class MenuProductController extends Controller
                         '[]'
                     ) as recipe
                 "),
-            )
-            ->groupBy("mc.name", "mp.id", "mp.name", "mp.manufacturing_cost");
 
-        if ($category) {
-            $query->where("mp.menu_category_id", $category);
+                    DB::raw("
+                    COALESCE(
+                        json_agg(
+                            DISTINCT jsonb_build_object(
+                                'price', mpu.price,
+                                'presentation', mpu.name,
+                                'equivalence', mpu.equivalence
+                            )
+                        ) FILTER (WHERE mpu.id IS NOT NULL),
+                        '[]'
+                    ) as presentations
+                "),
+                )
+                ->groupBy(
+                    "mc.name",
+                    "mp.id",
+                    "mp.name",
+                );
+
+            if ($category) {
+                $query->where("mp.menu_category_id", $category);
+            }
+
+            $data = $query->get();
+
+            $data->transform(function ($item) {
+                $item->recipe = json_decode($item->recipe, true);
+                $item->presentations = json_decode($item->presentations, true);
+
+                return $item;
+            });
+
+            return ApiResponse::success($data, 200);
+        } catch (\Throwable $th) {
+
+            return ApiResponse::error( $th->getMessage() , 500);
         }
-
-        $data = $query->get();
-
-        $data->transform(function ($item) {
-            $item->recipe = json_decode($item->recipe, true);
-            return $item;
-        });
-
-        return ApiResponse::success($data, 200);
     }
+
+
     //
     public function store(MenuProductRequest $request)
     {

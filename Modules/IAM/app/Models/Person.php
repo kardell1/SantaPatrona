@@ -4,6 +4,8 @@ namespace Modules\IAM\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Sales\Models\Sale;
+
 // use Modules\IAM\Database\Factories\PersonFactory;
 
 class Person extends Model
@@ -28,5 +30,10 @@ class Person extends Model
     public function personType()
     {
         return $this->belongsToMany(PersonType::class);
+    }
+
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
     }
 }

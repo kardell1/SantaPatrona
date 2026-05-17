@@ -12,15 +12,10 @@ class MenuProduct extends Model
 {
     use HasFactory;
 
+
     protected $fillable = [
-        "name",
-        "is_priority",
-        "suggested_selling_price",
-        "manufacturing_cost",
-        "adquisition_date",
-        "reception_date",
-        "expired_date",
-        "menu_category_id",
+        'name',
+        'menu_category_id',
     ];
     public function menuCategory()
     {
@@ -36,4 +31,5 @@ class MenuProduct extends Model
     {
         return $this->belongsToMany(Combo::class);
     }
+
 }

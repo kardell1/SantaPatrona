@@ -6,16 +6,15 @@ use Modules\Products\Http\Controllers\MenuCategoryController;
 use Modules\Products\Http\Controllers\MenuProductController;
 
 Route::prefix("v1")->group(function () {
-    Route::post('combos', [ComboController::class , 'store']);
+    Route::post('combos', [ComboController::class, 'store']);
     // se declara las rutas aca,
+    Route::get('combos', [ComboController::class, 'index']);
 
-    Route::get('combos/{combos}', [ComboController::class , 'show']);
-    // Route::get("products", function () {
-    //     return response()->json([
-    //         "status" => "ok",
-    //         "message" => "modulo de presupuestos!",
-    //     ]);
-    // });
+    Route::get('combos/{combos}', [ComboController::class, 'show']);
+
+    Route::put('combos/{combos}', [ComboController::class, 'update']);
+
+    // =================================== productos =================================
     Route::get("products", [MenuProductController::class, "index"]);
     //
     Route::post("products", [MenuProductController::class, "store"]);

@@ -4,7 +4,7 @@ namespace Modules\Products\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Support\ApiResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Modules\Products\Http\Requests\MenuCategoryRequest;
 use Modules\Products\Models\MenuCategory;
 
@@ -17,19 +17,33 @@ class MenuCategoryController extends Controller
         return ApiResponse::success($data, 200);
     }
 
-    // la category solo valida el name , y que no sea algo raro con numeros
-    public function store(MenuCategoryRequest $request)
-    {
-        //
+public function store(MenuCategoryRequest $request)
+{
+    DB::beginTransaction();
+
+    try {
         $validated = $request->validated();
 
-        MenuCategory::create([
-            "name" => $validated["name"],
-            "code" => null, // nullo por ahora
+        $newCategory = MenuCategory::create([
+            "name" => $validated["category"],
+            "code" => null, // null por ahora
         ]);
 
-        return ApiResponse::success("Se ha creado existosamente", 200);
+        DB::commit();
+
+        return ApiResponse::success($newCategory, 200);
+
+    } catch (\Throwable $e) {
+
+        DB::rollBack();
+
+        return ApiResponse::error(
+            "Error al crear la categoría",
+            $e->getMessage(),
+            500
+        );
     }
+}
 
     public function show(MenuCategory $menuCategory)
     {
@@ -43,7 +57,7 @@ class MenuCategoryController extends Controller
         $validated = $request->validated();
 
         $menuCategory->update([
-            "name" => $validated["name"],
+            "name" => $validated["category"],
         ]);
 
         return ApiResponse::success("Se ha actualizado exitosamente", 200);

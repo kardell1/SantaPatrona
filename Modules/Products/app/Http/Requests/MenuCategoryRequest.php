@@ -2,7 +2,9 @@
 
 namespace Modules\Products\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class MenuCategoryRequest extends FormRequest
 {
@@ -20,6 +22,19 @@ class MenuCategoryRequest extends FormRequest
             "category.string" => "formato invalido",
             "categroy.min" => "La nueva categoria debe ser mayor a 4 caracteres"
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+
+            response()->json([
+                'success' => false,
+                'message' => 'Errores de validacion',
+                'errors' => $validator->errors()
+            ], 422)
+
+        );
     }
 
     public function authorize(): bool

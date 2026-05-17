@@ -3,7 +3,6 @@
 namespace Modules\Production\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Modules\Production\Models\RawMaterial;
 use Modules\Production\Models\RawProduct;
 use Modules\Production\Models\RecipeBook;
 use Modules\Products\Models\MenuProduct;
@@ -17,6 +16,7 @@ class RecipeBooksSeeder extends Seeder
         $recipe = [
             [
                 "name" => "apple pie",
+                "suggested_selling_price" => 10,
                 "items" => [
                     // masa
                     ["code" => "sugar", "detail" => "masa"],
@@ -35,6 +35,7 @@ class RecipeBooksSeeder extends Seeder
 
             [
                 "name" => "camaron queso",
+                "suggested_selling_price" => 12,
                 "items" => [
                     // masa
                     ["code" => "eggs", "detail" => "masa"],
@@ -55,7 +56,7 @@ class RecipeBooksSeeder extends Seeder
             $new_menu_product = MenuProduct::create([
                 "name" => $item["name"],
                 "is_priority" => false,
-                "suggested_selling_price" => "",
+                "suggested_selling_price" =>$item['suggested_selling_price'] ,
                 "manufacturing_cost" => "4.19",
                 "adquisition_date" => now(),
                 "reception_date" => now(),

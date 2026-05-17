@@ -13,7 +13,7 @@ class ProductionDatabaseSeeder extends Seeder
             RawCategoriesSeeder::class,
             RawMaterialProductsSeeder::class,
             ProductsDatabaseSeeder::class,
-            RecipeBooksSeeder::class,
+//            RecipeBooksSeeder::class,
         ]);
     }
 }

@@ -59,11 +59,11 @@ class ComboController extends Controller
         }
     }
 
-    public function show(Combo $combo)
+    public function show(Combo $combos)
     {
-        $combo->load('menuProducts');
+        $combos->load('menuProducts');
 
-        return ApiResponse::success($combo, 200);
+        return ApiResponse::success($combos, 200);
     }
 
     public function update(ComboRequest $request, Combo $combo)
