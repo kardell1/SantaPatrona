@@ -8,7 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Modules\Products\Http\Requests\MenuProductRequest;
 use Modules\Products\Models\MenuProduct;
+use Modules\Products\Models\MenuProductExtra;
 use Modules\Products\Models\MenuProductUnit;
+use Modules\Products\Transformers\MenuProductShowResource;
 
 class MenuProductController extends Controller
 {
@@ -111,13 +113,24 @@ class MenuProductController extends Controller
                 "name" => $validated['name'],
                 "menu_category_id" => $validated['menu_category_id'],
             ]);
+            // aumentar la parte de los extras
+
+            foreach ($validated['extras'] as $extra) {
+                MenuProductExtra::create([
+                    'menu_product_id' => $newProduct->id,
+                    'price' => $extra['price'],
+                    'details' => $extra['details'],
+                    'raw_product_id' => $extra['raw_product_id']
+                ]);
+            }
+
 
             foreach ($validated['presentation'] as $presentation) {
                 MenuProductUnit::create([
-                    'name' => $presentation['name'] ,
-                    'equivalence' =>  $presentation['equivalence'] ,
-                    'price' =>  $presentation['price'] ,
-                    'menu_product_id' =>  $newProduct->id ,
+                    'name' => $presentation['name'],
+                    'equivalence' =>  $presentation['equivalence'],
+                    'price' =>  $presentation['price'],
+                    'menu_product_id' =>  $newProduct->id,
 
                 ]);
             }
@@ -142,23 +155,126 @@ class MenuProductController extends Controller
         }
     }
 
-    //
     public function show(MenuProduct $menuProduct)
     {
-        return ApiResponse::success($menuProduct, 200);
-    }
-    //
-    public function update(
-        MenuProductRequest $request,
-        MenuProduct $menuProduct,
-    ) {
-        $validated = $request->validated();
+        try {
 
-        $menuProduct->update($validated);
+            $data = $menuProduct->load([
+                'menuProductUnits',
+                'menuProductExtras.rawProduct',
+                'combos',
+                'menuCategory'
+            ]);
+            $clean = new MenuProductShowResource($data);
+            return ApiResponse::success(
+                $clean,
+                200
+            );
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
 
-        return ApiResponse::success($menuProduct->fresh(), 200);
+            return ApiResponse::error(
+                "Producto no encontrado",
+                404,
+                "Error al obtener el producto"
+            );
+        } catch (\Throwable $e) {
+
+            return ApiResponse::error(
+                $e->getMessage(),
+                500,
+                "Error interno del servidor"
+            );
+        }
     }
-    //
+
+    public function update(MenuProductRequest $request, string $id)
+    {
+        try {
+
+            $validated = $request->validated();
+
+            $product = MenuProduct::findOrFail($id);
+
+            $product->update([
+                "name" => $validated['name'],
+                "menu_category_id" => $validated['menu_category_id'],
+            ]);
+            // eliminar extras antiguos
+            MenuProductExtra::where(
+                'menu_product_id',
+                $product->id
+            )->delete();
+            // crear nuevos extras
+            foreach ($validated['extras'] as $extra) {
+
+                MenuProductExtra::create([
+                    'menu_product_id' => $product->id,
+                    'price' => $extra['price'],
+                    'details' => $extra['details'],
+                    'raw_product_id' => $extra['raw_product_id']
+                ]);
+            }
+            //
+            MenuProductUnit::where(
+                'menu_product_id',
+                $product->id
+            )->delete();
+            // crear nuevas presentaciones
+            foreach ($validated['presentation'] as $presentation) {
+
+                MenuProductUnit::create([
+                    'name' => $presentation['name'],
+                    'equivalence' => $presentation['equivalence'],
+                    'price' => $presentation['price'],
+                    'menu_product_id' => $product->id,
+                ]);
+            }
+
+            if (!empty($validated['combo_id'])) {
+
+                $product->combos()->sync([
+                    $validated['combo_id']
+                ]);
+            } else {
+
+                $product->combos()->detach();
+            }
+            // refrescar relaciones
+            $product->load([
+                'menuProductUnits',
+                'extras',
+                'combos'
+            ]);
+
+            return ApiResponse::success(
+                $product,
+                200
+            );
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+
+            return ApiResponse::error(
+                "Producto no encontrado",
+                404,
+                "Error al actualizar el producto",
+            );
+        } catch (\DomainException $e) {
+
+            return ApiResponse::error(
+                $e->getMessage(),
+                407,
+                "Error al actualizar el producto",
+            );
+        } catch (\Throwable $e) {
+
+            return ApiResponse::error(
+                $e->getMessage(),
+                500,
+                "Error interno del servidor",
+            );
+        }
+    }
+
+
     public function destroy(MenuProduct $menuProduct)
     {
         $menuProduct->delete();

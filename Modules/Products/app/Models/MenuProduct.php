@@ -32,4 +32,15 @@ class MenuProduct extends Model
         return $this->belongsToMany(Combo::class);
     }
 
+    public function menuProductUnits()
+    {
+        return $this->hasMany(MenuProductUnit::class);
+    }
+
+    public function menuProductExtras()
+    {
+        return $this->hasMany(MenuProductExtra::class);
+    }
+
+
 }
