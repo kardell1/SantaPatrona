@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Modules\Products\Http\Requests\MenuProductRequest;
 use Modules\Products\Models\MenuProduct;
+use Modules\Products\Models\MenuProductUnit;
 
 class MenuProductController extends Controller
 {
@@ -94,7 +95,7 @@ class MenuProductController extends Controller
             return ApiResponse::success($data, 200);
         } catch (\Throwable $th) {
 
-            return ApiResponse::error( $th->getMessage() , 500);
+            return ApiResponse::error($th->getMessage(), 500);
         }
     }
 
@@ -106,7 +107,24 @@ class MenuProductController extends Controller
         try {
             $validated = $request->validated();
 
-            $newProduct = MenuProduct::create($validated);
+            $newProduct = MenuProduct::create([
+                "name" => $validated['name'],
+                "menu_category_id" => $validated['menu_category_id'],
+            ]);
+
+            foreach ($validated['presentation'] as $presentation) {
+                MenuProductUnit::create([
+                    'name' => $presentation['name'] ,
+                    'equivalence' =>  $presentation['equivalence'] ,
+                    'price' =>  $presentation['price'] ,
+                    'menu_product_id' =>  $newProduct->id ,
+
+                ]);
+            }
+
+            if ($validated['combo_id']) {
+                $newProduct->combos()->attach($validated['combo_id']);
+            }
 
             return ApiResponse::success($newProduct, 201);
         } catch (\DomainException $e) {

@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('menu_inventories', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('menu_product_id');
-            $table->foreign('menu_product_id')->references('id')->on('menu_products');
+            //$table->unsignedBigInteger('menu_product_unit_id');
+            //$table->foreign('menu_product_unit_id')->references('id')->on('menu_product_units');
             $table->boolean("is_priority")->default(false);
             $table->integer('amount');
             $table->string("manufacturing_cost");
