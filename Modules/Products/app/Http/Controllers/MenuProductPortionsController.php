@@ -5,7 +5,7 @@ namespace Modules\Products\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class MenuProductUnitController extends Controller
+class MenuProductPortionsController extends Controller
 {
     /**
      * Display a listing of the resource.

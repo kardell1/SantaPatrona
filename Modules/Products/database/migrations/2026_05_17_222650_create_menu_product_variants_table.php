@@ -8,19 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('menu_product_units', function (Blueprint $table) {
+        Schema::create('menu_product_variants', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // nombre de la presentacion de la medida
-            $table->string('equivalence'); // equivalenia>??
-            $table->decimal('price' ,15,2); // precio de venta
             $table->unsignedBigInteger('menu_product_id');
             $table->foreign('menu_product_id')->references('id')->on('menu_products');
+            $table->string('name'); // debe ser unico???
+            $table->integer('divisions')->default(1);
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('menu_product_units');
+        Schema::dropIfExists('menu_product_variants');
     }
 };

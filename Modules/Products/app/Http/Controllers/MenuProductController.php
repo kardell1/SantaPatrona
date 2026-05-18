@@ -10,6 +10,7 @@ use Modules\Products\Http\Requests\MenuProductRequest;
 use Modules\Products\Models\MenuProduct;
 use Modules\Products\Models\MenuProductExtra;
 use Modules\Products\Models\MenuProductUnit;
+use Modules\Products\Models\MenuProductVariant;
 use Modules\Products\Transformers\MenuProductShowResource;
 
 class MenuProductController extends Controller
@@ -124,12 +125,12 @@ class MenuProductController extends Controller
                 ]);
             }
 
-
+            // esto es la variante del producto
             foreach ($validated['presentation'] as $presentation) {
-                MenuProductUnit::create([
+                MenuProductVariant::create([
                     'name' => $presentation['name'],
-                    'equivalence' =>  $presentation['equivalence'],
-                    'price' =>  $presentation['price'],
+                    'divisions' =>  $presentation['equivalence'],
+                    //'price' =>  $presentation['price'],
                     'menu_product_id' =>  $newProduct->id,
 
                 ]);

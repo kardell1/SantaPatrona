@@ -8,20 +8,59 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class MenuProductRequest extends FormRequest
 {
+
     public function rules(): array
     {
         return [
-            "name" => "required|string|min:5",
-            "menu_category_id" => "required|exists:menu_categories,id",
-            "combo_id" => "nullable|exists:combos,id",
+            "name" => "required|string|min:3|max:255",
+            "menu_category_id" => "required|integer|exists:menu_categories,id",
+            //
+
+            /*
+        |--------------------------------------------------------------------------
+        | Presentations / Variants
+        |--------------------------------------------------------------------------
+        */
+
             "presentation" => "required|array|min:1",
-            "presentation.*.name" => "required|string", // nombre representa el nombre comercial
-            "presentation.*.equivalence" => "required|string", // representa cuanto del producto total representa
-            "presentation.*.price" => "required|numeric|min:0", // el costo de esa porcion
-            "extras" => "required|array",
-            "extras.*.raw_product_id" => "exists:raw_products,id",
-            "extras.*.price" => "numeric|min:0",
-            "extras.*.detail" => "string|max:250",
+            "presentation.*.name" => "required|string|min:1|max:100",
+            // cantidad total de divisiones del producto
+            // ejemplo:
+            // grande -> 8
+            // pequeña -> 4
+            "presentation.*.equivalence" => "required|integer|min:1",
+            /*
+        |--------------------------------------------------------------------------
+        | Portions
+        |--------------------------------------------------------------------------
+        */
+            "presentation.*.portions" => "required|array|min:1",
+            "presentation.*.portions.*.name"
+            => "required|string|min:1|max:100",
+
+            "presentation.*.portions.*.combo_id" => "nullable|integer|exists:combos,id",
+
+            "presentation.*.portions.*.price"
+            => "required|numeric|min:0",
+            // cuantas divisiones consume esta porcion
+            // ejemplo:
+            // entera -> 8
+            // mitad -> 4
+            // rodaja -> 1
+            "presentation.*.portions.*.divisions"
+            => "required|integer|min:1",
+            /*
+        |--------------------------------------------------------------------------
+        | Extras
+        |--------------------------------------------------------------------------
+        */
+            "extras" => "nullable|array",
+            "extras.*.raw_product_id"
+            => "required|integer|exists:raw_products,id",
+            "extras.*.price"
+            => "required|numeric|min:0",
+            "extras.*.detail"
+            => "nullable|string|max:250",
         ];
     }
 
