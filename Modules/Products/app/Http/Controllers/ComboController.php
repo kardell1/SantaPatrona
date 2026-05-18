@@ -18,7 +18,6 @@ class ComboController extends Controller
 
         return ApiResponse::success($combos, 200);
     }
-
     public function store(ComboRequest $request)
     {
         DB::beginTransaction();
@@ -30,26 +29,27 @@ class ComboController extends Controller
             $new_combo = Combo::create([
                 'name' => $validated['name'],
                 'description' => $validated['description'],
-                'status' => $validated['status'],
+                'status' => $validated['status'] ?? true,
             ]);
 
-            if (count($validated['products']) > 0) {
-                foreach ($validated['products'] as $comboItem) {
-                    $newItemCombo = ComboItem::create([
-                        'combo_id' => $new_combo->id,
-                        'menu_product_variant_id' => $comboItem['item_id'],
-                        'amount' =>  $comboItem['amount'],
-                        'price' =>  $comboItem['price'],
-                        'replaceable' => $comboItem['replaceable']
+            foreach ($validated['products'] as $comboItem) {
+
+                $newItemCombo = ComboItem::create([
+                    'combo_id' => $new_combo->id,
+                    'menu_product_variant_id' => $comboItem['item_id'],
+                    'amount' => $comboItem['amount'],
+                    'price' => $comboItem['price'],
+                    'replaceable' => $comboItem['replaceable'],
+                ]);
+
+                foreach (($comboItem['replacement'] ?? []) as $replaceable) {
+
+                    ComboReplaceament::create([
+                        'combo_item_id' => $newItemCombo->id,
+                        'menu_product_variant_id' => $replaceable['item_id'],
+                        'amount' => $replaceable['amount'],
+                        'price' => $replaceable['price'],
                     ]);
-                    foreach ($comboItem['replaceament'] as $replaceable) {
-                        ComboReplaceament::create([
-                            'combo_item_id' => $newItemCombo->id,
-                            'menu_product_variant_id' => $replaceable['item_id'] ,
-                            'amount' => $replaceable['amount'] ,
-                            'price' => $replaceable['price'],
-                        ]);
-                    }
                 }
             }
 
@@ -70,7 +70,6 @@ class ComboController extends Controller
             );
         }
     }
-
     public function show(Combo $combos)
     {
         $combos->load('menuProducts');

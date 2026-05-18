@@ -8,7 +8,6 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class ComboRequest extends FormRequest
 {
-
     public function rules(): array
     {
         return [
@@ -30,7 +29,6 @@ class ComboRequest extends FormRequest
             "products.*.replacement.*.price" => "required|numeric|min:0",
         ];
     }
-
     public function messages(): array
     {
         return [
