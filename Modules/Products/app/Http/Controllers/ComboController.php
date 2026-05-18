@@ -7,6 +7,8 @@ use App\Support\ApiResponse;
 use Illuminate\Support\Facades\DB;
 use Modules\Products\Http\Requests\ComboRequest;
 use Modules\Products\Models\Combo;
+use Modules\Products\Models\ComboItem;
+use Modules\Products\Models\ComboReplaceament;
 
 class ComboController extends Controller
 {
@@ -32,13 +34,23 @@ class ComboController extends Controller
             ]);
 
             if (count($validated['products']) > 0) {
-
-                $Ids = collect($validated['products'])
-                    ->pluck('item_id')
-                    ->unique()
-                    ->values();
-
-                $new_combo->menuProducts()->attach($Ids);
+                foreach ($validated['products'] as $comboItem) {
+                    $newItemCombo = ComboItem::create([
+                        'combo_id' => $new_combo->id,
+                        'menu_product_variant_id' => $comboItem['item_id'],
+                        'amount' =>  $comboItem['amount'],
+                        'price' =>  $comboItem['price'],
+                        'replaceable' => $comboItem['replaceable']
+                    ]);
+                    foreach ($comboItem['replaceament'] as $replaceable) {
+                        ComboReplaceament::create([
+                            'combo_item_id' => $newItemCombo->id,
+                            'menu_product_variant_id' => $replaceable['item_id'] ,
+                            'amount' => $replaceable['amount'] ,
+                            'price' => $replaceable['price'],
+                        ]);
+                    }
+                }
             }
 
             DB::commit();

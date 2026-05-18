@@ -22,4 +22,8 @@ class MenuProductVariant extends Model
         return $this->hasMany(MenuProductPortions::class);
     }
 
+    public function comboItems()
+    {
+        return $this->hasMany(ComboItem::class);
+    }
 }

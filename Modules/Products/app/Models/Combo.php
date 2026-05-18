@@ -12,9 +12,9 @@ class Combo extends Model
 
     protected $fillable = ['name' , 'description' , 'status'];
 
-    public function menuProducts()
+    public function comboItems()
     {
-        return $this->belongsToMany(MenuProduct::class);
+        return $this->hasMany(ComboItem::class);
     }
 
 }
