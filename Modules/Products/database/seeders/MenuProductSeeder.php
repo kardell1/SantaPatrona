@@ -5,7 +5,8 @@ namespace Modules\Products\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Modules\Products\Models\MenuCategory;
 use Modules\Products\Models\MenuProduct;
-use Modules\Products\Models\MenuProductUnit;
+use Modules\Products\Models\MenuProductPortions;
+use Modules\Products\Models\MenuProductVariant;
 
 class MenuProductSeeder extends Seeder
 {
@@ -864,11 +865,16 @@ class MenuProductSeeder extends Seeder
             ]);
 
             foreach ($product['presentation'] as $presentation) {
-                MenuProductUnit::create([
-                    'name' =>  $presentation['name'],
-                    'equivalence' =>  $presentation['equivalence'],
+                $newVariant = MenuProductVariant::create([
+                    "menu_product_id" => $newProduct->id,
+                    "name" =>  "normal" ,
+                    "divisions" => 1
+                ]);
+                MenuProductPortions::create([
+                    'menu_product_variant_id' => $newVariant->id,
+                    'portion_name' => $presentation['name']  ,
                     'price' => $presentation['price'],
-                    'menu_product_id' => $newProduct->id,
+                    'consumed_division' => 1,
                 ]);
             }
         }

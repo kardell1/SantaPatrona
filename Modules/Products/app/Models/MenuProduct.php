@@ -26,16 +26,7 @@ class MenuProduct extends Model
     {
         return $this->hasMany(RecipeBook::class);
     }
-    //
-    public function combos()
-    {
-        return $this->belongsToMany(Combo::class);
-    }
 
-    public function menuProductUnits()
-    {
-        return $this->hasMany(MenuProductUnit::class);
-    }
 
     public function menuProductExtras()
     {
@@ -43,4 +34,8 @@ class MenuProduct extends Model
     }
 
 
+    public function menuProductVariants()
+    {
+        return $this->hasMany(MenuProductVariant::class);
+    }
 }

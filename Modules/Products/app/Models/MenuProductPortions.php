@@ -17,4 +17,6 @@ class MenuProductPortions extends Model
         return $this->belongsTo(MenuProductVariant::class);
     }
 
+
+
 }

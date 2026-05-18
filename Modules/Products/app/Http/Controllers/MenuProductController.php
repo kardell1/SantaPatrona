@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Products\Http\Requests\MenuProductRequest;
 use Modules\Products\Models\MenuProduct;
 use Modules\Products\Models\MenuProductExtra;
-use Modules\Products\Models\MenuProductUnit;
+use Modules\Products\Models\MenuProductPortions;
 use Modules\Products\Models\MenuProductVariant;
 use Modules\Products\Transformers\MenuProductShowResource;
 
@@ -19,90 +19,43 @@ class MenuProductController extends Controller
     {
         try {
 
-            $category = $request->input("category");
+            $category = $request->input('category');
 
-            $query = DB::table("menu_products as mp")
-                ->leftJoin(
-                    "menu_categories as mc",
-                    "mc.id",
-                    "=",
-                    "mp.menu_category_id",
-                )
-                ->leftJoin(
-                    "recipe_books as rb",
-                    "mp.id",
-                    "=",
-                    "rb.menu_product_id"
-                )
-                ->leftJoin(
-                    "raw_products as rp",
-                    "rp.id",
-                    "=",
-                    "rb.raw_product_id"
-                )
-                ->leftJoin(
-                    'menu_product_units as mpu',
-                    'mp.id',
-                    '=',
-                    'mpu.menu_product_id'
-                )
-                ->select(
-                    "mc.name as menu_product_category",
-                    "mp.id as menu_product_id",
-                    "mp.name as menu_product_name",
+            $query = MenuProduct::query()
 
-                    DB::raw("
-                    COALESCE(
-                        json_agg(
-                            DISTINCT jsonb_build_object(
-                                'detail', rb.detail,
-                                'raw_product_name', rp.name
-                            )
-                        ) FILTER (WHERE rb.id IS NOT NULL),
-                        '[]'
-                    ) as recipe
-                "),
+                ->with([
+                    "MenuProductVariants.MenuProductPortions",
+                    "MenuProductExtras"
+                ])
 
-                    DB::raw("
-                    COALESCE(
-                        json_agg(
-                            DISTINCT jsonb_build_object(
-                                'price', mpu.price,
-                                'presentation', mpu.name,
-                                'equivalence', mpu.equivalence
-                            )
-                        ) FILTER (WHERE mpu.id IS NOT NULL),
-                        '[]'
-                    ) as presentations
-                "),
-                )
-                ->groupBy(
-                    "mc.name",
-                    "mp.id",
-                    "mp.name",
-                );
+                ->select([
+                    'id',
+                    'name',
+                    'menu_category_id'
+                ]);
 
             if ($category) {
-                $query->where("mp.menu_category_id", $category);
+
+                $query->where(
+                    'menu_category_id',
+                    $category
+                );
             }
 
-            $data = $query->get();
+            $products = $query->get();
 
-            $data->transform(function ($item) {
-                $item->recipe = json_decode($item->recipe, true);
-                $item->presentations = json_decode($item->presentations, true);
-
-                return $item;
-            });
-
-            return ApiResponse::success($data, 200);
+            return ApiResponse::success(
+                $products,
+                200
+            );
         } catch (\Throwable $th) {
 
-            return ApiResponse::error($th->getMessage(), 500);
+            return ApiResponse::error(
+                $th->getMessage(),
+                500
+            );
         }
     }
-
-
     //
     public function store(MenuProductRequest $request)
     {
@@ -127,18 +80,26 @@ class MenuProductController extends Controller
 
             // esto es la variante del producto
             foreach ($validated['presentation'] as $presentation) {
-                MenuProductVariant::create([
+                $newProductVariant =  MenuProductVariant::create([
                     'name' => $presentation['name'],
                     'divisions' =>  $presentation['equivalence'],
                     //'price' =>  $presentation['price'],
                     'menu_product_id' =>  $newProduct->id,
 
                 ]);
+                // crear las porciones de venta de ese producto
+                foreach ($presentation['portions'] as $portion) {
+                    MenuProductPortions::create([
+                        'menu_product_variant_id' => $newProductVariant->id,
+                        'portion_name' =>  $portion['name'],
+                        'price' =>  $portion['price'],
+                        'consumed_division' => $portion['divisions'],
+                    ]);
+                }
             }
 
-            if ($validated['combo_id']) {
-                $newProduct->combos()->attach($validated['combo_id']);
-            }
+
+
 
             return ApiResponse::success($newProduct, 201);
         } catch (\DomainException $e) {
@@ -163,7 +124,6 @@ class MenuProductController extends Controller
             $data = $menuProduct->load([
                 'menuProductUnits',
                 'menuProductExtras.rawProduct',
-                'combos',
                 'menuCategory'
             ]);
             $clean = new MenuProductShowResource($data);
@@ -187,7 +147,6 @@ class MenuProductController extends Controller
             );
         }
     }
-
     public function update(MenuProductRequest $request, string $id)
     {
         try {
@@ -196,40 +155,75 @@ class MenuProductController extends Controller
 
             $product = MenuProduct::findOrFail($id);
 
+
             $product->update([
                 "name" => $validated['name'],
                 "menu_category_id" => $validated['menu_category_id'],
             ]);
-            // eliminar extras antiguos
+
+
             MenuProductExtra::where(
                 'menu_product_id',
                 $product->id
             )->delete();
-            // crear nuevos extras
-            foreach ($validated['extras'] as $extra) {
+
+
+            foreach ($validated['extras'] ?? [] as $extra) {
 
                 MenuProductExtra::create([
                     'menu_product_id' => $product->id,
+
                     'price' => $extra['price'],
-                    'details' => $extra['details'],
+
+                    'detail' => $extra['detail'] ?? null,
+
                     'raw_product_id' => $extra['raw_product_id']
                 ]);
             }
-            //
-            MenuProductUnit::where(
+
+
+            MenuProductPortions::whereIn(
+                'menu_product_variant_id',
+                MenuProductVariant::where(
+                    'menu_product_id',
+                    $product->id
+                )->pluck('id')
+            )->delete();
+
+
+            MenuProductVariant::where(
                 'menu_product_id',
                 $product->id
             )->delete();
-            // crear nuevas presentaciones
+
+
             foreach ($validated['presentation'] as $presentation) {
 
-                MenuProductUnit::create([
+                $newVariant = MenuProductVariant::create([
+
                     'name' => $presentation['name'],
-                    'equivalence' => $presentation['equivalence'],
-                    'price' => $presentation['price'],
+
+                    'divisions' => $presentation['equivalence'],
+
                     'menu_product_id' => $product->id,
                 ]);
+
+
+                foreach ($presentation['portions'] as $portion) {
+
+                    MenuProductPortions::create([
+
+                        'menu_product_variant_id' => $newVariant->id,
+
+                        'portion_name' => $portion['name'],
+
+                        'price' => $portion['price'],
+
+                        'consumed_division' => $portion['divisions'],
+                    ]);
+                }
             }
+
 
             if (!empty($validated['combo_id'])) {
 
@@ -240,9 +234,10 @@ class MenuProductController extends Controller
 
                 $product->combos()->detach();
             }
-            // refrescar relaciones
+
+
             $product->load([
-                'menuProductUnits',
+                'variants.portions',
                 'extras',
                 'combos'
             ]);
@@ -274,7 +269,6 @@ class MenuProductController extends Controller
             );
         }
     }
-
 
     public function destroy(MenuProduct $menuProduct)
     {

@@ -14,8 +14,6 @@ class MenuProductRequest extends FormRequest
         return [
             "name" => "required|string|min:3|max:255",
             "menu_category_id" => "required|integer|exists:menu_categories,id",
-            //
-
             /*
         |--------------------------------------------------------------------------
         | Presentations / Variants
@@ -38,7 +36,7 @@ class MenuProductRequest extends FormRequest
             "presentation.*.portions.*.name"
             => "required|string|min:1|max:100",
 
-            "presentation.*.portions.*.combo_id" => "nullable|integer|exists:combos,id",
+            //            "presentation.*.portions.*.combo_id" => "nullable|integer|exists:combos,id",
 
             "presentation.*.portions.*.price"
             => "required|numeric|min:0",
@@ -64,47 +62,150 @@ class MenuProductRequest extends FormRequest
         ];
     }
 
-
     public function messages(): array
     {
         return [
 
-            // PRODUCTO
-            "name.required" => "El nombre del producto es obligatorio.",
-            "name.string" => "El nombre debe ser texto.",
-            "name.min" => "El nombre debe tener al menos 5 caracteres.",
+            /*
+        |--------------------------------------------------------------------------
+        | PRODUCTO
+        |--------------------------------------------------------------------------
+        */
 
-            "menu_category_id.required" => "La categoría es obligatoria.",
-            "menu_category_id.exists" => "La categoría seleccionada no existe.",
+            "name.required"
+            => "El nombre del producto es obligatorio.",
 
-            "combo_id.exists" => "El combo seleccionado no existe.",
+            "name.string"
+            => "El nombre del producto debe ser texto.",
 
-            // PRESENTACIONES
-            "presentation.required" => "Debe existir al menos una presentación.",
-            "presentation.array" => "Las presentaciones deben enviarse como arreglo.",
-            "presentation.min" => "Debe existir al menos una presentación.",
+            "name.min"
+            => "El nombre del producto debe tener al menos 3 caracteres.",
 
-            "presentation.*.name.required" => "El nombre de la presentación es obligatorio.",
-            "presentation.*.name.string" => "El nombre de la presentación debe ser texto.",
+            "name.max"
+            => "El nombre del producto no puede superar los 255 caracteres.",
 
-            "presentation.*.equivalence.required" => "La equivalencia es obligatoria.",
-            "presentation.*.equivalence.string" => "La equivalencia debe ser texto.",
+            "menu_category_id.required"
+            => "La categoría es obligatoria.",
 
-            "presentation.*.price.required" => "El precio es obligatorio.",
-            "presentation.*.price.numeric" => "El precio debe ser numérico.",
-            "presentation.*.price.min" => "El precio no puede ser negativo.",
+            "menu_category_id.integer"
+            => "La categoría debe ser válida.",
 
-            // EXTRAS
-            "extras.required" => "Los extras son obligatorios.",
-            "extras.array" => "Los extras deben enviarse como arreglo.",
+            "menu_category_id.exists"
+            => "La categoría seleccionada no existe.",
 
-            "extras.*.raw_product_id.exists" => "El producto base seleccionado no existe.",
+            /*
+        |--------------------------------------------------------------------------
+        | PRESENTATIONS / VARIANTS
+        |--------------------------------------------------------------------------
+        */
 
-            "extras.*.price.numeric" => "El precio del extra debe ser numérico.",
-            "extras.*.price.min" => "El precio del extra no puede ser negativo.",
+            "presentation.required"
+            => "Debe registrar al menos una presentación.",
 
-            "extras.*.detail.string" => "El detalle del extra debe ser texto.",
-            "extras.*.detail.max" => "El detalle del extra no puede superar los 250 caracteres.",
+            "presentation.array"
+            => "Las presentaciones deben enviarse como arreglo.",
+
+            "presentation.min"
+            => "Debe registrar al menos una presentación.",
+
+            "presentation.*.name.required"
+            => "El nombre de la presentación es obligatorio.",
+
+            "presentation.*.name.string"
+            => "El nombre de la presentación debe ser texto.",
+
+            "presentation.*.name.min"
+            => "El nombre de la presentación debe tener al menos 1 carácter.",
+
+            "presentation.*.name.max"
+            => "El nombre de la presentación no puede superar los 100 caracteres.",
+
+            "presentation.*.equivalence.required"
+            => "La equivalencia de la presentación es obligatoria.",
+
+            "presentation.*.equivalence.integer"
+            => "La equivalencia debe ser un número entero.",
+
+            "presentation.*.equivalence.min"
+            => "La equivalencia debe ser al menos 1.",
+
+            /*
+        |--------------------------------------------------------------------------
+        | PORTIONS
+        |--------------------------------------------------------------------------
+        */
+
+            "presentation.*.portions.required"
+            => "Debe registrar al menos una porción.",
+
+            "presentation.*.portions.array"
+            => "Las porciones deben enviarse como arreglo.",
+
+            "presentation.*.portions.min"
+            => "Debe registrar al menos una porción.",
+
+            "presentation.*.portions.*.name.required"
+            => "El nombre de la porción es obligatorio.",
+
+            "presentation.*.portions.*.name.string"
+            => "El nombre de la porción debe ser texto.",
+
+            "presentation.*.portions.*.name.min"
+            => "El nombre de la porción debe tener al menos 1 carácter.",
+
+            "presentation.*.portions.*.name.max"
+            => "El nombre de la porción no puede superar los 100 caracteres.",
+
+            "presentation.*.portions.*.price.required"
+            => "El precio de la porción es obligatorio.",
+
+            "presentation.*.portions.*.price.numeric"
+            => "El precio de la porción debe ser numérico.",
+
+            "presentation.*.portions.*.price.min"
+            => "El precio de la porción no puede ser negativo.",
+
+            "presentation.*.portions.*.divisions.required"
+            => "La división consumida es obligatoria.",
+
+            "presentation.*.portions.*.divisions.integer"
+            => "La división consumida debe ser un número entero.",
+
+            "presentation.*.portions.*.divisions.min"
+            => "La división consumida debe ser al menos 1.",
+
+            /*
+        |--------------------------------------------------------------------------
+        | EXTRAS
+        |--------------------------------------------------------------------------
+        */
+
+            "extras.array"
+            => "Los extras deben enviarse como arreglo.",
+
+            "extras.*.raw_product_id.required"
+            => "El producto base del extra es obligatorio.",
+
+            "extras.*.raw_product_id.integer"
+            => "El producto base del extra debe ser válido.",
+
+            "extras.*.raw_product_id.exists"
+            => "El producto base seleccionado no existe.",
+
+            "extras.*.price.required"
+            => "El precio del extra es obligatorio.",
+
+            "extras.*.price.numeric"
+            => "El precio del extra debe ser numérico.",
+
+            "extras.*.price.min"
+            => "El precio del extra no puede ser negativo.",
+
+            "extras.*.detail.string"
+            => "El detalle del extra debe ser texto.",
+
+            "extras.*.detail.max"
+            => "El detalle del extra no puede superar los 250 caracteres.",
         ];
     }
     /**
