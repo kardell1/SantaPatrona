@@ -5,6 +5,7 @@ namespace Modules\IAM\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Products\Models\MenuInventory;
 use Modules\Sales\Models\Sale;
 
 // use Modules\IAM\Database\Factories\EmployeeFactory;
@@ -34,4 +35,10 @@ class Employee extends Model
     {
         return $this->hasMany(Sale::class);
     }
+
+    public function menuInventories()
+    {
+        return $this->hasMany(MenuInventory::class);
+    }
+
 }
