@@ -5,12 +5,12 @@ namespace Modules\Products\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Support\ApiResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Modules\Products\Http\Requests\MenuProductRequest;
 use Modules\Products\Models\MenuProduct;
 use Modules\Products\Models\MenuProductExtra;
 use Modules\Products\Models\MenuProductPortions;
 use Modules\Products\Models\MenuProductVariant;
+use Modules\Products\Transformers\MenuProductResource;
 use Modules\Products\Transformers\MenuProductShowResource;
 
 class MenuProductController extends Controller
@@ -24,8 +24,8 @@ class MenuProductController extends Controller
             $query = MenuProduct::query()
 
                 ->with([
-                    "MenuProductVariants.MenuProductPortions",
-                    "MenuProductExtras"
+                    "menuProductVariants.menuProductPortions",
+                    "menuProductExtras" , "menuCategory"
                 ])
 
                 ->select([
@@ -45,7 +45,7 @@ class MenuProductController extends Controller
             $products = $query->get();
 
             return ApiResponse::success(
-                $products,
+                MenuProductResource::collection($products),
                 200
             );
         } catch (\Throwable $th) {
@@ -122,8 +122,9 @@ class MenuProductController extends Controller
         try {
 
             $data = $menuProduct->load([
-                'menuProductUnits',
-                'menuProductExtras.rawProduct',
+                'menuProductVariants.menuProductPortions',
+                'menuProductExtras',
+                'menuProductVariants.comboItems.combo',
                 'menuCategory'
             ]);
             $clean = new MenuProductShowResource($data);
