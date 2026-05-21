@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('combo_item_id');
             $table->foreign('combo_item_id')->references('id')->on('combo_items');
-            $table->unsignedBigInteger('menu_product_id');
-            $table->foreign('menu_product_id')->references('id')->on('menu_products');
+            $table->unsignedBigInteger('menu_product_variant_id');
+            $table->foreign('menu_product_variant_id')->references('id')->on('menu_product_variants');
             $table->integer('amount')->default(1);
             $table->decimal('price', 15, 2);
 

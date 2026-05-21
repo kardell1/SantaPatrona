@@ -14,10 +14,121 @@ class ComboController extends Controller
 {
     public function index()
     {
-        $combos = Combo::all();
+        try {
 
-        return ApiResponse::success($combos, 200);
+            // replacements subquery
+            $replacementSubQuery = "
+(
+    SELECT COALESCE(
+        json_agg(
+            json_build_object(
+
+                'id', cr.id,
+                'amount', cr.amount,
+                'price', cr.price,
+
+                'variant', json_build_object(
+                    'id', mpv_r.id,
+                    'name', mpv_r.name
+                ),
+
+                'product', json_build_object(
+                    'id', mp_r.id,
+                    'name', mp_r.name
+                )
+
+            )
+        ),
+        '[]'::json
+    )
+
+    FROM combo_replaceaments cr
+
+    LEFT JOIN menu_product_variants mpv_r
+        ON cr.menu_product_variant_id = mpv_r.id
+
+    LEFT JOIN menu_products mp_r
+        ON mpv_r.menu_product_id = mp_r.id
+
+    WHERE cr.combo_item_id = ci.id
+)
+";
+            // subquery combo items aggregate
+            $comboItemsSubQuery = DB::table('combo_items as ci')
+                ->leftJoin('menu_product_variants as mpv', 'ci.menu_product_variant_id', '=', 'mpv.id')
+                ->leftJoin('menu_products as mp', 'mpv.menu_product_id', '=', 'mp.id')
+
+                ->selectRaw("
+        ci.combo_id,
+
+        json_agg(
+            json_build_object(
+                'combo_item_id', ci.id,
+                'amount', ci.amount,
+                'price', ci.price,
+                'replaceable', ci.replaceable,
+
+                'variant', json_build_object(
+                    'id', mpv.id,
+                    'name', mpv.name
+                ),
+
+                'product', json_build_object(
+                    'id', mp.id,
+                    'name', mp.name
+                ),
+
+                'combo_replaceaments',
+                $replacementSubQuery
+            )
+        ) as combo_items
+    ")
+
+                ->groupBy('ci.combo_id');
+
+
+            // main query
+            $query = DB::table('combos as co')
+
+                ->leftJoinSub($comboItemsSubQuery, 'items', function ($join) {
+                    $join->on('co.id', '=', 'items.combo_id');
+                })
+
+                ->select(
+                    'co.id',
+                    'co.name as combo_name',
+                    'co.description as combo_description',
+                    'items.combo_items'
+                )
+
+                ->get();
+
+
+            // decode json
+            $query = $query->map(function ($item) {
+
+                $item->combo_items = json_decode($item->combo_items, true);
+
+                return $item;
+            });
+
+
+            return response()->json([
+                'success' => true,
+                'data' => $query
+            ]);
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ], 500);
+        }
+        //
     }
+
     public function store(ComboRequest $request)
     {
         DB::beginTransaction();
@@ -72,42 +183,73 @@ class ComboController extends Controller
     }
     public function show(Combo $combos)
     {
-        $combos->load('menuProducts');
+        /* $combos->load('menuProducts';gc */
 
         return ApiResponse::success($combos, 200);
     }
-
-    //verificar esta ruta --------------
+    // verificar esta ruta --------------
     public function update(ComboRequest $request, Combo $combo)
     {
-        $validated = $request->validated();
+        DB::beginTransaction();
 
-        // actualizar datos principales
-        $combo->update([
-            'name' => $validated['name'],
-            'description' => $validated['description'],
-            'status' => $validated['status'],
-        ]);
+        try {
 
-        // eliminar relaciones actuales
-        $combo->menuProducts()->detach();
+            $validated = $request->validated();
 
-        // volver a registrar productos
-        if (count($validated['products']) > 0) {
+            // actualizar datos principales
+            $combo->update([
+                'name' => $validated['name'],
+                'description' => $validated['description'],
+                'status' => $validated['status'] ?? true,
+            ]);
 
-            $Ids = collect($validated['products'])
-                ->pluck('item_id')
-                ->unique()
-                ->values();
+            // eliminar replacements antiguos
+            ComboReplaceament::whereIn(
+                'combo_item_id',
+                $combo->comboItems()->pluck('id')
+            )->delete();
 
-            $combo->menuProducts()->attach($Ids);
+            // eliminar items antiguos
+            ComboItem::where('combo_id', $combo->id)->delete();
+
+            // volver a registrar items
+            foreach ($validated['products'] as $comboItem) {
+
+                $newComboItem = ComboItem::create([
+                    'combo_id' => $combo->id,
+                    'menu_product_variant_id' => $comboItem['item_id'],
+                    'amount' => $comboItem['amount'],
+                    'price' => $comboItem['price'],
+                    'replaceable' => $comboItem['replaceable'],
+                ]);
+
+                // guardar replacements
+                foreach (($comboItem['replacement'] ?? []) as $replacement) {
+
+                    ComboReplaceament::create([
+                        'combo_item_id' => $newComboItem->id,
+                        'menu_product_variant_id' => $replacement['item_id'],
+                        'amount' => $replacement['amount'],
+                        'price' => $replacement['price'],
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return ApiResponse::success(
+                'Combo actualizado correctamente',
+                200
+            );
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            return ApiResponse::error(
+                $e->getMessage(),
+                500
+            );
         }
-
-        // recargar relaciones
-        $combo->load('menuProducts');
-
-        return ApiResponse::success($combo, 200);
     }
-
     public function destroy($id) {}
 }

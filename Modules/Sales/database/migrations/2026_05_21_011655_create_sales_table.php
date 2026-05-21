@@ -13,8 +13,8 @@ return new class extends Migration
 
             $table->unsignedBigInteger('client_id');
             $table->foreign('client_id')->references('id')->on('people');
-            $table->unsignedBigInteger('client_id');
-            $table->foreign('client_id')->references('id')->on('people');
+            $table->unsignedBigInteger('employee_id');
+            $table->foreign('employee_id')->references('id')->on('employees');
             $table->decimal('total_amount')->default(0);
             $table->enum('type_payment', ['delivery', 'event', 'internal'])->default('internal');
             $table->timestamps();
