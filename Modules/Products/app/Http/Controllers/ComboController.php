@@ -12,82 +12,84 @@ use Modules\Products\Models\ComboReplaceament;
 
 class ComboController extends Controller
 {
+
+
     public function index()
     {
         try {
 
-            // replacements subquery
             $replacementSubQuery = "
-(
-    SELECT COALESCE(
-        json_agg(
-            json_build_object(
+        (
+            SELECT COALESCE(
+                json_agg(
+                    json_build_object(
+                        'id', cr.id,
+                        'amount', cr.amount,
+                        'price', cr.price,
 
-                'id', cr.id,
-                'amount', cr.amount,
-                'price', cr.price,
+                        'product_name', mp_r.name,
+                        'product_id', mp_r.id,
 
-                'variant', json_build_object(
-                    'id', mpv_r.id,
-                    'name', mpv_r.name
+                        'variant_name', mpv_r.name,
+                        'variant_id', mpv_r.id
+                    )
                 ),
+                '[]'::json
+            )
 
-                'product', json_build_object(
-                    'id', mp_r.id,
-                    'name', mp_r.name
+            FROM combo_replaceaments cr
+
+            LEFT JOIN menu_product_variants mpv_r
+                ON cr.menu_product_variant_id = mpv_r.id
+
+            LEFT JOIN menu_products mp_r
+                ON mpv_r.menu_product_id = mp_r.id
+
+            WHERE cr.combo_item_id = ci.id
+        )
+        ";
+
+            $comboItemsSubQuery = DB::table('combo_items as ci')
+
+                ->leftJoin(
+                    'menu_product_variants as mpv',
+                    'ci.menu_product_variant_id',
+                    '=',
+                    'mpv.id'
                 )
 
-            )
-        ),
-        '[]'::json
-    )
-
-    FROM combo_replaceaments cr
-
-    LEFT JOIN menu_product_variants mpv_r
-        ON cr.menu_product_variant_id = mpv_r.id
-
-    LEFT JOIN menu_products mp_r
-        ON mpv_r.menu_product_id = mp_r.id
-
-    WHERE cr.combo_item_id = ci.id
-)
-";
-            // subquery combo items aggregate
-            $comboItemsSubQuery = DB::table('combo_items as ci')
-                ->leftJoin('menu_product_variants as mpv', 'ci.menu_product_variant_id', '=', 'mpv.id')
-                ->leftJoin('menu_products as mp', 'mpv.menu_product_id', '=', 'mp.id')
+                ->leftJoin(
+                    'menu_products as mp',
+                    'mpv.menu_product_id',
+                    '=',
+                    'mp.id'
+                )
 
                 ->selectRaw("
-        ci.combo_id,
+                ci.combo_id,
 
-        json_agg(
-            json_build_object(
-                'combo_item_id', ci.id,
-                'amount', ci.amount,
-                'price', ci.price,
-                'replaceable', ci.replaceable,
+                json_agg(
+                    json_build_object(
 
-                'variant', json_build_object(
-                    'id', mpv.id,
-                    'name', mpv.name
-                ),
+                        'item_id', ci.id,
+                        'amount', ci.amount,
+                        'price', ci.price,
+                        'replaceable', ci.replaceable,
 
-                'product', json_build_object(
-                    'id', mp.id,
-                    'name', mp.name
-                ),
+                        'product_name', mp.name,
+                        'product_id', mp.id,
 
-                'combo_replaceaments',
-                $replacementSubQuery
-            )
-        ) as combo_items
-    ")
+                        'variant_name', mpv.name,
+                        'variant_id', mpv.id,
+
+                        'combo_replaceaments',
+                        $replacementSubQuery
+                    )
+                ) as combo_items
+            ")
 
                 ->groupBy('ci.combo_id');
 
-
-            // main query
             $query = DB::table('combos as co')
 
                 ->leftJoinSub($comboItemsSubQuery, 'items', function ($join) {
@@ -103,20 +105,16 @@ class ComboController extends Controller
 
                 ->get();
 
-
-            // decode json
             $query = $query->map(function ($item) {
-
                 $item->combo_items = json_decode($item->combo_items, true);
-
                 return $item;
             });
 
+            return ApiResponse::success(
+               $query,
+                200
+            );
 
-            return response()->json([
-                'success' => true,
-                'data' => $query
-            ]);
         } catch (\Throwable $e) {
 
             return response()->json([
@@ -126,7 +124,6 @@ class ComboController extends Controller
                 'file' => $e->getFile()
             ], 500);
         }
-        //
     }
 
     public function store(ComboRequest $request)
@@ -181,18 +178,129 @@ class ComboController extends Controller
             );
         }
     }
-    public function show(Combo $combos)
-    {
-        /* $combos->load('menuProducts';gc */
 
-        return ApiResponse::success($combos, 200);
+    public function show(Combo $combo)
+    {
+        try {
+
+            $replacementSubQuery = "
+        (
+            SELECT COALESCE(
+                json_agg(
+                    json_build_object(
+                        'id', cr.id,
+                        'amount', cr.amount,
+                        'price', cr.price,
+
+                        'product_name', mp_r.name,
+                        'product_id', mp_r.id,
+
+                        'variant_name', mpv_r.name,
+                        'variant_id', mpv_r.id
+                    )
+                ),
+                '[]'::json
+            )
+
+            FROM combo_replaceaments cr
+
+            LEFT JOIN menu_product_variants mpv_r
+                ON cr.menu_product_variant_id = mpv_r.id
+
+            LEFT JOIN menu_products mp_r
+                ON mpv_r.menu_product_id = mp_r.id
+
+            WHERE cr.combo_item_id = ci.id
+        )
+        ";
+
+            $comboItemsSubQuery = DB::table('combo_items as ci')
+
+                ->leftJoin(
+                    'menu_product_variants as mpv',
+                    'ci.menu_product_variant_id',
+                    '=',
+                    'mpv.id'
+                )
+
+                ->leftJoin(
+                    'menu_products as mp',
+                    'mpv.menu_product_id',
+                    '=',
+                    'mp.id'
+                )
+
+                ->selectRaw("
+                ci.combo_id,
+
+                json_agg(
+                    json_build_object(
+
+                        'item_id', ci.id,
+                        'amount', ci.amount,
+                        'price', ci.price,
+                        'replaceable', ci.replaceable,
+
+                        'product_name', mp.name,
+                        'product_id', mp.id,
+
+                        'variant_name', mpv.name,
+                        'variant_id', mpv.id,
+
+                        'combo_replaceaments',
+                        $replacementSubQuery
+                    )
+                ) as combo_items
+            ")
+
+                ->groupBy('ci.combo_id');
+
+            $query = DB::table('combos as co')
+
+                ->leftJoinSub($comboItemsSubQuery, 'items', function ($join) {
+                    $join->on('co.id', '=', 'items.combo_id');
+                })
+
+                ->select(
+                    'co.id',
+                    'co.name as combo_name',
+                    'co.description as combo_description',
+                    'items.combo_items'
+                )
+
+                ->where('co.id', $combo->id)
+
+                ->first();
+
+
+            if ($query && $query->combo_items) {
+                $query->combo_items = json_decode($query->combo_items, true);
+            }
+
+            return ApiResponse::success(
+                $query,
+                200
+            );
+
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ], 500);
+        }
     }
+
+
     // verificar esta ruta --------------
     public function update(ComboRequest $request, Combo $combo)
     {
         DB::beginTransaction();
 
         try {
+           DB::commit();
 
             $validated = $request->validated();
 
@@ -202,6 +310,7 @@ class ComboController extends Controller
                 'description' => $validated['description'],
                 'status' => $validated['status'] ?? true,
             ]);
+
 
             // eliminar replacements antiguos
             ComboReplaceament::whereIn(
@@ -235,11 +344,9 @@ class ComboController extends Controller
                 }
             }
 
-            DB::commit();
 
             return ApiResponse::success(
-                'Combo actualizado correctamente',
-                200
+                 $combo  ,    200
             );
         } catch (\Throwable $e) {
 

@@ -11,9 +11,9 @@ Route::prefix("v1")->group(function () {
     // se declara las rutas aca,
     Route::get('combos', [ComboController::class, 'index']);
 
-    Route::get('combos/{combos}', [ComboController::class, 'show']);
+    Route::get('combos/{combo}', [ComboController::class, 'show']);
 
-    Route::put('combos/{combos}', [ComboController::class, 'update']);
+    Route::patch('combos/{combo}', [ComboController::class, 'update']);
 
     // =================================== productos =================================
     Route::get("products", [MenuProductController::class, "index"]);
