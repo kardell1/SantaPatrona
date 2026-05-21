@@ -21,7 +21,7 @@ class MenuProductResource extends JsonResource
                         return [
                             "portion_name" => $portion->portion_name,
                             "price" => $portion->price,
-                            "consumed_person" => $portion->consumed_division
+                            "consumed_divisions" => $portion->consumed_division
                         ];
                     })
                 ];

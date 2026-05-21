@@ -77,6 +77,7 @@ class ComboController extends Controller
         return ApiResponse::success($combos, 200);
     }
 
+    //verificar esta ruta --------------
     public function update(ComboRequest $request, Combo $combo)
     {
         $validated = $request->validated();
