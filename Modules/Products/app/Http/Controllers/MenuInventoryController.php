@@ -8,30 +8,60 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Modules\Products\Http\Requests\MenuInventoryRequest;
 use Modules\Products\Models\MenuInventory;
+use Modules\Products\Models\MenuProductVariant;
 
 class MenuInventoryController extends Controller
 {
-    public function index()
-    {
-        // vemos todos los inventarios que tenemos , vision simplificada
-        $data = MenuInventory::all();
 
-        return ApiResponse::success(
-            [
-                "info" =>  "formato de respuesta va ser",
-                "data" => [
-                    "category" => "Almaneda",
-                    "amount" => "20",
-                    "reception_date" => "20/05/2026",
-                    "expired_date" => "20/05/2026",
-                    "flavor_name" => " (va el sabor) frutilla",
-                    "product_name" => "nombre del producto" ,
-                    "variant_name" => "nombre de la subdivision",
-                ]
-            ],
-            201
-        );
+    public function index(Request $request)
+    {
+        try {
+
+            $category = $request->input('category');
+            // mpv.divisions
+            $query = DB::table('menu_inventories as mi')
+                ->leftJoin('menu_product_variants as mpv', 'mi.menu_product_variant_id', '=', 'mpv.id')
+                ->leftJoin('menu_products as mp', 'mpv.menu_product_id', '=', 'mp.id')
+                ->leftJoin('menu_flavors as mf', 'mi.menu_flavor_id', '=', 'mf.id')
+                ->leftJoin('menu_categories as mc', 'mp.menu_category_id', '=', 'mc.id')
+                ->select(
+                    'mi.id',
+                    //DB::raw('(mi.amount / mpv.divisions) as amount_available'),
+                    DB::raw('
+                        CASE
+                            WHEN mpv.divisions > 0
+                            THEN ROUND(mi.amount / mpv.divisions, 2)
+                            ELSE 0
+                        END as amount_available
+                    '),
+                    'mi.reception_date',
+                    'mi.expired_date',
+                    'mf.name as flavor_name',
+                    'mp.name as product_name',
+                    'mpv.name as variant_name',
+                    'mc.name as category',
+                    'mpv.sold_price'
+                );
+
+            if ($category) {
+                $query->where('mc.id', $category);
+            }
+
+            $inventories = $query->get();
+
+            return ApiResponse::success(
+                $inventories,
+                200
+            );
+        } catch (\Throwable $th) {
+
+            return ApiResponse::error(
+                $th->getMessage(),
+                500
+            );
+        }
     }
+
     public function store(MenuInventoryRequest $request)
     {
         DB::beginTransaction();
@@ -40,23 +70,36 @@ class MenuInventoryController extends Controller
 
             $validated = $request->validated();
 
-            // aun falta la conversion de la cantidad al momento de agregar el item
-            // para hacerlo de forma de un entero y no trabajar con fracciones o decimales
+            $foundInventory = MenuInventory::where('menu_product_variant_id',  $validated['product_variant_id'])
+                ->where("reception_date",  $validated['reception_date'])
+                ->where("menu_flavor_id", $validated['flavor_id'])
+                ->first();
+
+            $foundProductVariant = MenuProductVariant::find($validated['product_variant_id']);
             //
-            $inventory = MenuInventory::create([
-                'menu_product_variant_id' => $validated['product_variant_id'],
-                'manufacturing_cost' => $validated['manufacturing_cost'],
-                'amount' => $validated['amount'],
-                'reception_date' => $validated['reception_date'],
-                'expired_date' => $validated['expired_date'],
-                'employee_id' => 1, // luego sacar del token
-                'menu_flavor_id' => $validated['flavor_id'],
-            ]);
+            $newStock = $validated['amount'] * $foundProductVariant['divisions'];
+            //
+            if ($foundInventory) {
+                $foundInventory->amount += $newStock;
+                $foundInventory->manufacturing_cost = $validated['manufacturing_cost'];
+                $foundInventory->expired_date = $validated['expired_date'];
+                $foundInventory->save();
+            } else {
+                MenuInventory::create([
+                    'menu_product_variant_id' => $validated['product_variant_id'],
+                    'manufacturing_cost' => $validated['manufacturing_cost'],
+                    'amount' => $newStock,
+                    'reception_date' => $validated['reception_date'],
+                    'expired_date' => $validated['expired_date'],
+                    'employee_id' => 1, // luego sacar del token
+                    'menu_flavor_id' => $validated['flavor_id'],
+                ]);
+            }
 
             DB::commit();
 
             return ApiResponse::success(
-                $inventory,
+                "Agregado exitosamente",
                 201
             );
         } catch (\Throwable $e) {
@@ -71,10 +114,48 @@ class MenuInventoryController extends Controller
         }
     }
 
-    public function show($id)
+    public function show(int $id)
     {
-        return view('products::show');
+        try {
+            $query = DB::table('menu_inventories as mi')
+                ->leftJoin('menu_product_variants as mpv', 'mi.menu_product_variant_id', '=', 'mpv.id')
+                ->leftJoin('menu_products as mp', 'mpv.menu_product_id', '=', 'mp.id')
+                ->leftJoin('menu_flavors as mf', 'mi.menu_flavor_id', '=', 'mf.id')
+                ->leftJoin('menu_categories as mc', 'mp.menu_category_id', '=', 'mc.id')
+                ->select(
+                    'mi.id',
+                    //DB::raw('(mi.amount / mpv.divisions) as amount_available'),
+                    DB::raw('
+                        CASE
+                            WHEN mpv.divisions > 0
+                            THEN ROUND(mi.amount / mpv.divisions, 2)
+                            ELSE 0
+                        END as amount_available
+                    '),
+                    'mi.reception_date',
+                    'mi.expired_date',
+                    'mf.name as flavor_name',
+                    'mp.name as product_name',
+                    'mpv.name as variant_name',
+                    'mc.name as category',
+                    'mpv.sold_price'
+                )->where('mi.id' , $id);
+
+            $inventories = $query->first();
+
+            return ApiResponse::success(
+                $inventories,
+                200
+            );
+        } catch (\Throwable $th) {
+
+            return ApiResponse::error(
+                $th->getMessage(),
+                500
+            );
+        }
     }
+
     public function update(Request $request, $id) {}
     public function destroy($id) {}
 }

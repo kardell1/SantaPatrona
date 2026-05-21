@@ -16,6 +16,7 @@ class MenuProductResource extends JsonResource
                 return [
                     "name" => $item->name,
                     "divisions" => $item->divisions,
+                    "sold_price" => $item->sold_price,
                     "menu_product_portions" => $item->menuProductPortions->map(function($portion){
                         return [
                             "portion_name" => $portion->portion_name,

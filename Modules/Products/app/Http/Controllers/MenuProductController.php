@@ -4,6 +4,7 @@ namespace Modules\Products\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Support\ApiResponse;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Modules\Products\Http\Requests\MenuProductRequest;
 use Modules\Products\Models\MenuProduct;
@@ -82,10 +83,11 @@ class MenuProductController extends Controller
             foreach ($validated['presentation'] as $presentation) {
                 $newProductVariant =  MenuProductVariant::create([
                     'name' => $presentation['name'],
+                    // representa la cantidad de porciones que tenemos disponibles de esta variante
                     'divisions' =>  $presentation['equivalence'],
                     //'price' =>  $presentation['price'],
                     'menu_product_id' =>  $newProduct->id,
-
+                    "sold_price" => $presentation['sold_price'],
                 ]);
                 // crear las porciones de venta de ese producto
                 foreach ($presentation['portions'] as $portion) {
@@ -132,7 +134,7 @@ class MenuProductController extends Controller
                 $clean,
                 200
             );
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
 
             return ApiResponse::error(
                 "Producto no encontrado",

@@ -18,9 +18,11 @@ class MenuProductShowResource extends JsonResource
             "extras" => $this->menuProductExtras,
             "menu_product_variants" => $this->menuProductVariants->map(function ($variant) {
                 return [
+                    "id" => $variant->id,
                     "name" => $variant->name,
                     "divisions" => $variant->divisions,
                     "created_at" => $variant->created_at,
+                    "sold_price" => $variant->sold_price,
                     "menu_product_portions" => $variant->menuProductPortions->map(function ($portion) {
                         return [
                             "portion_name" => $portion->portion_name,

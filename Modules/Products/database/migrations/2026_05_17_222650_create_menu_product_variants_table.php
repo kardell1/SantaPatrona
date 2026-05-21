@@ -14,6 +14,7 @@ return new class extends Migration
             $table->foreign('menu_product_id')->references('id')->on('menu_products');
             $table->string('name'); // debe ser unico???
             $table->integer('divisions')->default(1);
+            $table->decimal('sold_price')->default(0);
             $table->timestamps();
         });
     }

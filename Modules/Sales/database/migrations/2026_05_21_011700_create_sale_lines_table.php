@@ -10,17 +10,19 @@ return new class extends Migration
     {
         Schema::create('sale_lines', function (Blueprint $table) {
             $table->id();
+
             $table->unsignedBigInteger('sale_id');
             $table->foreign('sale_id')->references('id')->on('sales');
 
-            $table->unsignedBigInteger('menu_product_id');
-            $table->foreign('menu_product_id')->references('id')->on('menu_products');
+            $table->unsignedBigInteger('menu_inventory_id');
+            $table->foreign('menu_inventory_id')->references('id')->on('menu_inventories');
 
-            $table->decimal('price' , 15,2);
-            // para saber si pertenecia a un combo
-            // solo se guarda la referencia del nombre, para que no se modifique luego
-            $table->string('combo')->nullable();
-            $table->boolean('is_combo')->default(false);
+            $table->string('combo');
+
+            $table->integer('amount')->default(0);
+
+            $table->decimal('price')->default(0);
+
             $table->timestamps();
         });
     }

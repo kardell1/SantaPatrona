@@ -13,6 +13,7 @@ class MenuProductRequest extends FormRequest
     {
         return [
             "name" => "required|string|min:3|max:255",
+            // nombre  : empanada o torta
             "menu_category_id" => "required|integer|exists:menu_categories,id",
             /*
         |--------------------------------------------------------------------------
@@ -21,11 +22,14 @@ class MenuProductRequest extends FormRequest
         */
 
             "presentation" => "required|array|min:1",
+            // nombre es la presentacion : por ejemplo
+            // grande , pequeña
             "presentation.*.name" => "required|string|min:1|max:100",
             // cantidad total de divisiones del producto
+            "presentation.*.sold_price" => "required|numeric|min:0",
             // ejemplo:
-            // grande -> 8
-            // pequeña -> 4
+            // grande -> 8 personas
+            // pequeña -> 4 personas  (solo colocar el numero entero)
             "presentation.*.equivalence" => "required|integer|min:1",
             /*
         |--------------------------------------------------------------------------

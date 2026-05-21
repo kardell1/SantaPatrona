@@ -10,16 +10,13 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger("client_id");
+
+            $table->unsignedBigInteger('client_id');
             $table->foreign('client_id')->references('id')->on('people');
-
-            $table->unsignedBigInteger("employee_id");
-            $table->foreign('employee_id')->references('id')->on('employees');
-
-            $table->decimal('total_amount', 15, 2);
-
-            $table->enum('type_payment', ['delivery', 'event', 'internal']);
-
+            $table->unsignedBigInteger('client_id');
+            $table->foreign('client_id')->references('id')->on('people');
+            $table->decimal('total_amount')->default(0);
+            $table->enum('type_payment', ['delivery', 'event', 'internal'])->default('internal');
             $table->timestamps();
         });
     }

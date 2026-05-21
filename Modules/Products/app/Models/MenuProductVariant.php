@@ -10,7 +10,7 @@ class MenuProductVariant extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['menu_product_id' , 'name' , 'divisions'];
+    protected $fillable = ['menu_product_id' , 'name' , 'divisions' , 'sold_price'];
 
     public function menuProduct()
     {
