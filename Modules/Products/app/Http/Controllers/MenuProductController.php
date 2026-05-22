@@ -32,7 +32,8 @@ class MenuProductController extends Controller
                 ->select([
                     'id',
                     'name',
-                    'menu_category_id'
+                    'menu_category_id',
+                    'type_product'
                 ]);
 
             if ($category) {
@@ -46,6 +47,7 @@ class MenuProductController extends Controller
             $products = $query->get();
 
             return ApiResponse::success(
+                //$products,
                 MenuProductResource::collection($products),
                 200
             );
@@ -67,9 +69,10 @@ class MenuProductController extends Controller
             $newProduct = MenuProduct::create([
                 "name" => $validated['name'],
                 "menu_category_id" => $validated['menu_category_id'],
+                "type_product" => $validated['type_product']
             ]);
             // aumentar la parte de los extras
-
+            // esto debe de borrarse
             foreach ($validated['extras'] as $extra) {
                 MenuProductExtra::create([
                     'menu_product_id' => $newProduct->id,
@@ -100,9 +103,6 @@ class MenuProductController extends Controller
                 }
             }
 
-
-
-
             return ApiResponse::success($newProduct, 201);
         } catch (\DomainException $e) {
             return ApiResponse::error(
@@ -131,11 +131,12 @@ class MenuProductController extends Controller
             ]);
             $clean = new MenuProductShowResource($data);
             return ApiResponse::success(
+                //$menuProduct,
+                //$data,
                 $clean,
                 200
             );
         } catch (ModelNotFoundException $e) {
-
             return ApiResponse::error(
                 "Producto no encontrado",
                 404,
@@ -150,6 +151,7 @@ class MenuProductController extends Controller
             );
         }
     }
+
     public function update(MenuProductRequest $request, string $id)
     {
         try {
@@ -162,6 +164,7 @@ class MenuProductController extends Controller
             $product->update([
                 "name" => $validated['name'],
                 "menu_category_id" => $validated['menu_category_id'],
+                "type_product" => $validated['type_product']
             ]);
 
 
@@ -201,40 +204,28 @@ class MenuProductController extends Controller
 
 
             foreach ($validated['presentation'] as $presentation) {
-
                 $newVariant = MenuProductVariant::create([
-
                     'name' => $presentation['name'],
-
                     'divisions' => $presentation['equivalence'],
-
                     'menu_product_id' => $product->id,
+                    'sold_price' => $presentation['sold_price']
                 ]);
 
-
                 foreach ($presentation['portions'] as $portion) {
-
                     MenuProductPortions::create([
-
                         'menu_product_variant_id' => $newVariant->id,
-
                         'portion_name' => $portion['name'],
-
                         'price' => $portion['price'],
-
                         'consumed_division' => $portion['divisions'],
                     ]);
                 }
             }
 
-
             if (!empty($validated['combo_id'])) {
-
                 $product->combos()->sync([
                     $validated['combo_id']
                 ]);
             } else {
-
                 $product->combos()->detach();
             }
 

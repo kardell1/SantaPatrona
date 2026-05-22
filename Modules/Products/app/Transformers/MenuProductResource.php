@@ -12,6 +12,7 @@ class MenuProductResource extends JsonResource
         return [
             "id" => $this->id,
             "name" => $this->name,
+            "type_product" => $this->type_product,
             "menu_product_variants" => $this->menuProductVariants->map(function ($item) {
                 return [
                     "name" => $item->name,

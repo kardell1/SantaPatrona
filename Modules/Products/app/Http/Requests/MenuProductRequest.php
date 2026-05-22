@@ -15,6 +15,7 @@ class MenuProductRequest extends FormRequest
             "name" => "required|string|min:3|max:255",
             // nombre  : empanada o torta
             "menu_category_id" => "required|integer|exists:menu_categories,id",
+            'type_product' => "required|string|in:simple,recipe",
             /*
         |--------------------------------------------------------------------------
         | Presentations / Variants
@@ -53,7 +54,7 @@ class MenuProductRequest extends FormRequest
             => "required|integer|min:1",
             /*
         |--------------------------------------------------------------------------
-        | Extras
+        | Extras --- esto debe de borrarse
         |--------------------------------------------------------------------------
         */
             "extras" => "nullable|array",

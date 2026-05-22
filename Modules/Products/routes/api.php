@@ -14,7 +14,6 @@ Route::prefix("v1")->group(function () {
     Route::get('combos/{combo}', [ComboController::class, 'show']);
 
     Route::patch('combos/{combo}', [ComboController::class, 'update']);
-
     // =================================== productos =================================
     Route::get("products", [MenuProductController::class, "index"]);
     //

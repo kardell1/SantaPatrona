@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->string("name");
             $table->unsignedBigInteger('menu_category_id');
             $table->foreign('menu_category_id')->references('id')->on('menu_categories');
+            $table->enum('type_product' , ['simple' , 'recipe'])->default('simple');
             $table->timestamps();
         });
     }

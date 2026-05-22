@@ -10,13 +10,6 @@ class SaleLine extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     */
-    protected $fillable = [];
+    protected $fillable = ['sale_id','menu_inventory_id','combo','amount','price'];
 
-    // protected static function newFactory(): SaleLineFactory
-    // {
-    //     // return SaleLineFactory::new();
-    // }
 }

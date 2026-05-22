@@ -29,18 +29,7 @@ class SaleRequest extends FormRequest
             // Venta de productos
             "items.*.products" => "nullable|array",
 
-            // producto individual
-            "items.*.products.*.product_id" => "required|integer|exists:menu_products,id",
-            "items.*.products.*.price" => "required|numeric|min:0",
 
-            // detalles/customizaciones
-            "items.*.products.*.detail" => "nullable|array",
-
-            "items.*.products.*.detail.*.raw_product" =>
-            "required|integer|exists:raw_products,id",
-
-            "items.*.products.*.detail.*.action" =>
-            "required|string|in:add,remove",
         ];
     }
 
