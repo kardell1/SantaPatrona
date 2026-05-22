@@ -23,7 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('employee_id');
             $table->foreign('employee_id')->references('id')->on('employees');
             // es el sabor del item en el inventario
-            $table->unsignedBigInteger('menu_flavor_id');
+            $table->unsignedBigInteger('menu_flavor_id')->nullable();
             $table->foreign('menu_flavor_id')->references('id')->on('menu_flavors');
             $table->unique([
                 'menu_product_variant_id',
