@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('menu_inventory_id');
             $table->foreign('menu_inventory_id')->references('id')->on('menu_inventories');
 
-            $table->string('combo');
+            $table->string('combo')->nullable();
 
             $table->integer('amount')->default(0);
 
