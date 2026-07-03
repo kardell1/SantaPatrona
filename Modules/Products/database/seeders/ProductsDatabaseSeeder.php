@@ -8,13 +8,13 @@ class ProductsDatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // los productos se crean desde el recetario
-        // poner o crear otro seeder para los productos que no parten de ese lugar
         $this->call([
-            MenuCategorySeeder::class,
-            MenuProductSeeder::class,
-            MenuFlavorSeeder::class,
-            MenuInventorySeeder::class
+            CategorySeeder::class,
+            SizeSeeder::class,
+            ColorSeeder::class,
+            MaterialSeeder::class,
+            TagSeeder::class,
+            StyleSeeder::class
         ]);
     }
 }

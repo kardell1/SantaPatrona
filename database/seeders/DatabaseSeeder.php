@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Modules\HumanResources\Database\Seeders\HumanResourcesDatabaseSeeder;
 use Modules\IAM\Database\Seeders\IAMDatabaseSeeder;
-use Modules\Production\Database\Seeders\ProductionDatabaseSeeder;
 use Modules\Products\Database\Seeders\ProductsDatabaseSeeder;
 
 class DatabaseSeeder extends Seeder
@@ -16,8 +16,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             IAMDatabaseSeeder::class,
-
-          //  ProductionDatabaseSeeder::class,
+            HumanResourcesDatabaseSeeder::class,
+            BranchSeeder::class,
             ProductsDatabaseSeeder::class
         ]);
     }

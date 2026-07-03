@@ -6,11 +6,12 @@ use Illuminate\Database\Seeder;
 
 class HumanResourcesDatabaseSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // $this->call([]);
+        $this->call([
+            PositionSeeder::class,
+            EmployeeTypeSeeder::class,
+            EmployeeSeeder::class
+        ]);
     }
 }

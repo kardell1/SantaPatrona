@@ -9,10 +9,10 @@ class IAMDatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            PersonTypesSeeder::class,
+            ScopeSeeder::class,
+            PermissionSeeder::class,
+            SectionSeeder::class,
             RolesSeeder::class,
-            PermissionsSeeder::class,
-            EmployeesSeeder::class,
         ]);
     }
 }

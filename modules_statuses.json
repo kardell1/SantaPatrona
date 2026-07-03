@@ -6,5 +6,6 @@
     "Budgeting": true,
     "Account": true,
     "Accounting": true,
-    "HumanResources": true
+    "HumanResources": true,
+    "Inventory": true
 }

@@ -15,7 +15,7 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    protected $fillable = ["email", "password", "username"];
+    protected $fillable = [ 'role_id', "email", "password", "username" , 'is_locked'];
     protected $hidden = ["password", "remember_token"];
 
     protected function casts(): array
@@ -31,6 +31,10 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    public function branches()
+    {
+        return $this->belongsToMany(Branch::class);
+    }
     // modificar esto para que solo devuelva los view
     public function effectivePermissions()
     {

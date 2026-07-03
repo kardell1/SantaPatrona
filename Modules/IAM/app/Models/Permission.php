@@ -10,10 +10,15 @@ class Permission extends Model
 {
     use HasFactory;
 
-    protected $fillable = ["module", "resource", "action"];
+    protected $fillable = ['label' , 'code'];
 
-    public function roles()
+    public function scopes ()
     {
-        return $this->belongsToMany(Role::class);
+        return $this->belongsToMany(Scope::class);
+    }
+
+    public function sections()
+    {
+        return $this->belongsToMany(Section::class);
     }
 }

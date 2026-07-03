@@ -1,61 +1,55 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Products\Http\Controllers\ComboController;
-use Modules\Products\Http\Controllers\MenuCategoryController;
-use Modules\Products\Http\Controllers\MenuInventoryController;
-use Modules\Products\Http\Controllers\MenuProductController;
+use Modules\Products\Http\Controllers\CategoryController;
+use Modules\Products\Http\Controllers\ProductsController;
 
-Route::prefix("v1")->group(function () {
-    Route::post('combos', [ComboController::class, 'store']);
-    // se declara las rutas aca,
-    Route::get('combos', [ComboController::class, 'index']);
 
-    Route::get('combos/{combo}', [ComboController::class, 'show']);
 
-    Route::patch('combos/{combo}', [ComboController::class, 'update']);
-    // =================================== productos =================================
-    Route::get("products", [MenuProductController::class, "index"]);
-    //
-    Route::post("products", [MenuProductController::class, "store"]);
-    //
-    Route::get("products/{menuProduct}", [
-        MenuProductController::class,
-        "show",
-    ]);
-    Route::patch("products/{menuProduct}", [
-        MenuProductController::class,
-        "update",
-    ]);
-    Route::delete("products/{menuProduct}", [
-        MenuProductController::class,
-        "destroy",
-    ]);
 
-    // de categorias
-    Route::get("category-products", [MenuCategoryController::class, "index"]);
-    Route::post("category-products", [MenuCategoryController::class, "store"]);
-    Route::get("category-products/{menuCategory}", [
-        MenuCategoryController::class,
-        "show",
-    ]);
-    Route::patch("category-products/{menuCategory}", [
-        MenuCategoryController::class,
-        "update",
-    ]);
-    Route::delete("category-products/{menuCategory}", [
-        MenuCategoryController::class,
-        "destroy",
-    ]);
-    // ========================== inventarios ====================================
-    Route::get("inventory", [MenuInventoryController::class, "index"]);
-    Route::post("inventory", [MenuInventoryController::class, "store"]);
-    Route::get("inventory/{menuInventory}", [MenuInventoryController::class, "update"]);
-    Route::delete("inventory", [MenuInventoryController::class, "destroy"]);
+Route::prefix('v1')->group(function () {
+
+    // =====================================================================================
+    // =============================== Productos ===========================================
+    // =====================================================================================
+
+    Route::get('products', [ProductsController::class, 'index']);
+    Route::get('products/{product}', [ProductsController::class, 'show']);
+    Route::patch('products/{product}', [ProductsController::class, 'update']);
+
+    // =====================================================================================
+    // =============================== Categories ===========================================
+    // =====================================================================================
+
+    // todos lo ven
+    Route::get('categories' , [CategoryController::class , 'index']);
+    // solo lo crea el admin
+    Route::post('categories' , [CategoryController::class , 'store']);
+    // visualizacion general
+    Route::get('categories/{id}' , [CategoryController::class , 'show']);
+    // actualizacion para el admin
+    Route::patch('categories/{id}' , [CategoryController::class , 'update']);
+
+    Route::delete('categories/{id}' , [CategoryController::class , 'destroy']);
+
+    // =====================================================================================
+    // =============================== Colores ===========================================
+    // =====================================================================================
+
+    // =====================================================================================
+    // =============================== Tallas ===========================================
+    // =====================================================================================
+
+    // =====================================================================================
+    // =============================== Tags ===========================================
+    // =====================================================================================
+
+
 });
 
-Route::middleware(["auth:sanctum"])
-    ->prefix("v1")
-    ->group(function () {
-        // Route::apiResource('products', ProductsController::class)->names('products');
-    });
+
+
+
+Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
+    Route::apiResource('products', ProductsController::class)->names('products');
+});
