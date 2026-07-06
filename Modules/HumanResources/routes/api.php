@@ -14,7 +14,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('humanresources', HumanResourcesController::class)->names('humanresources');
 });
 
-Route::prefix('v1')->group(function () {
+Route::prefix('v1/core')->group(function () {
 
     // =====================================================================================
     // =============================== Empleados internos ==================================
@@ -49,6 +49,7 @@ Route::prefix('v1')->group(function () {
     Route::get('configuration/employees', [EmployeeConfigurationController::class, 'index']);
     Route::post('configuration/employees', [EmployeeConfigurationController::class, 'store']);
     Route::get('configuration/employees/{id}', [EmployeeConfigurationController::class, 'show']);
+    Route::get('configuration/information/employees/{id}', [EmployeeConfigurationController::class, 'info']);
     Route::put('configuration/employees/{employee}', [EmployeeConfigurationController::class, 'update']);
     Route::delete('configuration/employees/{employee}', [EmployeeConfigurationController::class, 'destroy']);
     //

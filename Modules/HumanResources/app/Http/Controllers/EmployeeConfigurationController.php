@@ -103,11 +103,68 @@ class EmployeeConfigurationController extends Controller
     public function show(int $id)
     {
         try {
-
             $data = Employee::with([
-                'user:id,username',
+                'user:id,username,role_id',
                 'user.branches:id,name',
                 'user.role:id,name,description',
+
+                'employeeType:id,name',
+                'position:id,name',
+
+                'person:id,first_name,email,phone',
+
+                'person.personTypes:id,name,description',
+
+                'person.profile:id,person_id,middle_name,paternal_lastname,maternal_lastname,age',
+
+                'person.personDetails:id,person_id,identifier_type,identifier_id',
+            ])
+                ->select(
+                    'id',
+                    'created_at',
+                    'salary',
+                    'user_id',
+                    'employee_type_id',
+                    'person_id',
+                    'position_id',
+                )
+                ->find($id);
+
+            $clean = $this->employeeFormatter->cleanShowEmployee($data);
+            return NormalizedResponse::success(
+                $clean,
+                'Consulta realizada correctamente'
+            );
+        } catch (\Throwable $e) {
+
+            return NormalizedResponse::error(
+                [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ],
+                'Consulta realizada correctamente'
+            );
+        }
+    }
+
+    // hay que aumentar ultima accion realizada
+    // hay que aumentar salarios pagados
+    // hay que aumentar ventas realizadas
+    // hay que aumentar ventas totales
+    // hay un metodo de vista general del empleado
+    public function info(int $id)
+    {
+        try {
+
+
+
+            $data = Employee::with([
+                'user:id,username,created_at,role_id',
+                'user.branches:id,name',
+                'user.role:id,name,description',
+
+                'employeeType:id,name',
 
                 'position:id,name',
 
@@ -124,12 +181,15 @@ class EmployeeConfigurationController extends Controller
                     'salary',
                     'user_id',
                     'person_id',
+                    'employee_type_id',
                     'position_id'
                 )
                 ->find($id);
 
+
+            $clean = $this->employeeFormatter->cleanInfoEmployee($data);
             return NormalizedResponse::success(
-                $data,
+                $clean,
                 'Consulta realizada correctamente'
             );
         } catch (\Throwable $e) {
@@ -144,6 +204,9 @@ class EmployeeConfigurationController extends Controller
             );
         }
     }
+
+
+    // y hay otro metodo donde editamos lo que hemos subido del empleado
 
     // actualizacion de todos los datos del empleado
     public function update(Request $request, $id)

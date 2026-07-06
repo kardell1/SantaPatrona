@@ -24,12 +24,10 @@ class Employee extends Model
     {
         return $this->belongsTo(User::class);
     }
-
     public function position()
     {
         return $this->belongsTo(Position::class);
     }
-
     public function person()
     {
         return $this->belongsTo(Person::class);
