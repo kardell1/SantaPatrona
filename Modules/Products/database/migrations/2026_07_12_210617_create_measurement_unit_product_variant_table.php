@@ -8,20 +8,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('product_variant_tag', function (Blueprint $table) {
+        Schema::create('measurement_unit_product_variant', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('measurement_unit_id');
+            $table->foreign('measurement_unit_id')->references('id')->on('measurement_units');
             $table->unsignedBigInteger('product_variant_id');
             $table->foreign('product_variant_id')->references('id')->on('product_variants');
-
-            $table->unsignedBigInteger('tag_id');
-            $table->foreign('tag_id')->references('id')->on('tags');
-
+            // siempre que se tenga esta tabla, se especifica la unidad que vamos registrar
+            $table->string('amount');
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('product_variant_tag');
+        Schema::dropIfExists('measurement_unit_product_variant');
     }
 };

@@ -11,7 +11,7 @@ class Material extends Model
     use HasFactory;
 
     protected $fillable = ['name' , 'description'];
-
+    protected $hidden = ['pivot'];
     public function productVariants()
     {
         return $this->belongsToMany(ProductVariant::class);

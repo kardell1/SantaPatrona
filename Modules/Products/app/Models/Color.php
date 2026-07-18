@@ -11,7 +11,7 @@ class Color extends Model
     use HasFactory;
 
     protected $fillable = ['name' , 'hexa' , 'description'];
-
+    protected $hidden = ['pivot'];
     public function productVariants()
     {
         return $this->hasMany(ProductVariant::class);

@@ -10,7 +10,7 @@ class ProductVariant extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['product_id' , 'name' , 'divisions' , 'sold_suggest_price' , 'status'];
+    protected $fillable = ['product_id' , 'name' , 'sold_suggest' ];
 
     public function product()
     {
@@ -21,15 +21,13 @@ class ProductVariant extends Model
     {
         return $this->belongsToMany(Tag::class);
     }
-
-    public function productDetails()
-    {
-        return $this->hasMany(ProductDetail::class);
-    }
-
     public function sizes()
     {
         return $this->belongsToMany(Size::class);
     }
 
+    public function measuryUnits()
+    {
+        return $this->belongsToMany(MeasurementUnit::class);
+    }
 }

@@ -11,7 +11,7 @@ class Size extends Model
     use HasFactory;
 
     protected $fillable = ['size', 'description', 'size_system', 'equivalence_id', 'gender'];
-
+    protected $hidden = ['pivot'];
     public function equivalence()
     {
         return $this->belongsTo(self::class, 'equivalence_id');

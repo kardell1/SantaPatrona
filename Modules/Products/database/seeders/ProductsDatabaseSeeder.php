@@ -14,7 +14,10 @@ class ProductsDatabaseSeeder extends Seeder
             ColorSeeder::class,
             MaterialSeeder::class,
             TagSeeder::class,
-            StyleSeeder::class
+            StyleSeeder::class,
+            MeasurementUnitSeeder::class,
+            BrandSeeder::class,
+            ProductsSeeder::class
         ]);
     }
 }

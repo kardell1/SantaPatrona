@@ -15,13 +15,14 @@ class ProductStoreRequest extends FormRequest
         return [
             // datos basicos de producto ===============================
             'name' => 'required|string|max:50',
+            // en caso de que sea una nueva variante viene con esto
             'category_id' => 'required|integer|exists:categories,id',
             // la marca apunta a una persona
             // proveedor_id , es la persona que nos da el producto
-            'provider_id' => 'required|integer|exists:people,id',
+            'brand_id' => 'required|integer|exists:people,id',
 
-            'variant_name' => 'required|string|max:50',
-            'variant_sold_suggest_price' => 'required|numeric|min:0',
+            'variant' => 'required|string|max:50',
+            'sold_suggest_price' => 'required|numeric|min:0',
             // =========================================================
 
             // seccion de variantes ====================================
@@ -37,15 +38,11 @@ class ProductStoreRequest extends FormRequest
 
             'tags.*' => 'nullable|integer|exists:tags,id',
             // ========================================================
-
-            // convertir esta parte en un array en el futuro para que agreguen mas detalles
-            // seccion de detalles ====================================
-            'presentation' => 'nullable', // presentacion
-            'unity' => '' , // numero de la unidad
-            'unity_type' => '', // nombre de unidad
-            'details' => '' , // alguna informacion que no se haya podido ingresar
+            'presentation' => 'required|string|max:100', // presentacion
+            'unity' => 'nullable|string' , // numero de la unidad
+            'unity_type' => 'nullable|string', // nombre de unidad
+            'details' => 'nullable|string' , // alguna informacion que no se haya podido ingresar
             // ========================================================
-            // los posibles estados deberian habilitado, deshabilitado
             'status' => 'required|in:enable,disable',
         ];
     }

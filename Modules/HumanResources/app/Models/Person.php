@@ -26,4 +26,9 @@ class Person extends Model
     {
         return $this->hasMany(PersonDetail::class);
     }
+
+    public function brands()
+    {
+        return $this->belongsToMany(Brand::class);
+    }
 }

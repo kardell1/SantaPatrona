@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Supports\NormalizedResponse;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -28,10 +29,19 @@ return Application::configure(basePath: dirname(__DIR__))
                     ];
                 }
             }
-            return NormalizedResponse::error( $errors,'ValidationException', 422);
+            return NormalizedResponse::error($errors, 'ValidationException', 422);
         });
 
         $exceptions->render(function (NotFoundHttpException $e) {
             return NormalizedResponse::error([], 'Record not found.', 422);
+        });
+
+
+        $exceptions->render(function (QueryException $e) {
+            return NormalizedResponse::error([
+                'sql' => $e->getSql(),
+                'bindings' => $e->getBindings(),
+                'error' => $e->getMessage(),
+            ], 'Error en la consulta a la base de datos.', 500);
         });
     })->create();

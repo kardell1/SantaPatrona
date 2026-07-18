@@ -15,6 +15,9 @@ class CategorySeeder extends Seeder
             "Running",
             "Entrenamiento",
             "Fútbol",
+            "Cartones",
+            "Hilos",
+            "Pegamentos",
             "Baloncesto",
             "Senderismo",
             "Botas",
@@ -29,6 +32,7 @@ class CategorySeeder extends Seeder
             "Alpargatas",
             "Zapatillas Urbanas",
             "Slip-On",
+            "Hormas",
             "Seguridad Industrial"
         ];
         foreach($categories as $category){

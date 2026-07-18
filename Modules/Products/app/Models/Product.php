@@ -4,13 +4,15 @@ namespace Modules\Products\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\HumanResources\Models\Brand;
+
 // use Modules\Products\Database\Factories\ProductFactory;
 
 class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name' , 'category_id'];
+    protected $fillable = ['gender', 'brand_id'  , 'status' , 'name' , 'category_id'];
 
     public function category()
     {
@@ -40,5 +42,9 @@ class Product extends Model
     public function materials()
     {
         return $this->belongsToMany(Material::class);
+    }
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
     }
 }

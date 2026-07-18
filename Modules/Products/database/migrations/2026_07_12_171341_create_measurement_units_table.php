@@ -8,19 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('product_details', function (Blueprint $table) {
+        Schema::create('measurement_units', function (Blueprint $table) {
             $table->id();
-
+            $table->enum('type_unit', ['peso', 'longitud', 'capacidad', 'espesor']); //
             $table->string('name');
-            $table->decimal('unity');
-            $table->string('unity_type');
-            $table->string('description');
+            $table->string('acronime');
+            $table->boolean('isBase')->default(false); // para saber si es la base
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('product_details');
+        Schema::dropIfExists('measurement_units');
     }
 };
