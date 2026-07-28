@@ -10,10 +10,20 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name' , 'description'];
+    protected $fillable = ['name', 'description' , 'unit_type_id'];
 
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function componentProducts()
+    {
+        return $this->belongsToMany(ComponentProduct::class);
+    }
+
+    public function unitType()
+    {
+        return $this->belongsTo(UnitType::class);
     }
 }

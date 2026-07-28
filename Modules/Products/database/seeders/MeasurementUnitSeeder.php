@@ -3,132 +3,132 @@
 namespace Modules\Products\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Modules\Products\Models\Equivalence;
 use Modules\Products\Models\MeasurementUnit;
+use Modules\Products\Models\UnitType;
 
 class MeasurementUnitSeeder extends Seeder
 {
     public function run(): void
     {
-        $measurementUnits = [
-            // Peso
+        $units = [
             [
-                'type_unit' => 'peso',
-                'name' => 'Gramo',
-                'acronime' => 'g',
-                'isBase' => true,
+                'measurement' => 'longitud',
+                'units' => [
+                    ['name' => 'Milímetro', 'acronym' => 'mm'],
+                    ['name' => 'Centímetro', 'acronym' => 'cm'],
+                    ['name' => 'Metro', 'acronym' => 'm'],
+                    ['name' => 'Kilómetro', 'acronym' => 'km'],
+                    ['name' => 'Pulgada', 'acronym' => 'in'],
+                    ['name' => 'Pie', 'acronym' => 'ft'],
+                    ['name' => 'Yarda', 'acronym' => 'yd'],
+                ],
             ],
             [
-                'type_unit' => 'peso',
-                'name' => 'Kilogramo',
-                'acronime' => 'kg',
-                'isBase' => false,
-            ],
-
-            // Longitud
-            [
-                'type_unit' => 'longitud',
-                'name' => 'Metro',
-                'acronime' => 'm',
-                'isBase' => true,
+                'measurement' => 'peso', // o masa
+                'units' => [
+                    ['name' => 'Miligramo', 'acronym' => 'mg'],
+                    ['name' => 'Gramo', 'acronym' => 'g'],
+                    ['name' => 'Kilogramo', 'acronym' => 'kg'],
+                    ['name' => 'Tonelada', 'acronym' => 't'],
+                    ['name' => 'Onza', 'acronym' => 'oz'],
+                    ['name' => 'Libra', 'acronym' => 'lb'],
+                ],
             ],
             [
-                'type_unit' => 'longitud',
-                'name' => 'Centímetro',
-                'acronime' => 'cm',
-                'isBase' => false,
+                'measurement' => 'volumen', // capacidad
+                'units' => [
+                    ['name' => 'mililitro', 'acronym' => 'mL'],
+                    ['name' => 'litro', 'acronym' => 'L'],
+                    ['name' => 'Metro cúbico', 'acronym' => 'm³'],
+                    ['name' => 'Galón', 'acronym' => 'gal'],
+                ],
             ],
             [
-                'type_unit' => 'longitud',
-                'name' => 'Milímetro',
-                'acronime' => 'mm',
-                'isBase' => false,
-            ],
-
-            // Capacidad
-            [
-                'type_unit' => 'capacidad',
-                'name' => 'Litro',
-                'acronime' => 'L',
-                'isBase' => true,
-            ],
-            [
-                'type_unit' => 'capacidad',
-                'name' => 'Mililitro',
-                'acronime' => 'mL',
-                'isBase' => false,
+                'measurement' => 'area', //
+                'units' => [
+                    ['name' => 'Centímetro cuadrado', 'acronym' => 'cm²'],
+                    ['name' => 'Metro cuadrado', 'acronym' => 'm²'],
+                    ['name' => 'Hectárea', 'acronym' => 'ha'],
+                    ['name' => 'Kilómetro cuadrado', 'acronym' => 'km²'],
+                ],
             ],
 
-            // Espesor
+            /* [ */
+            /*     'measurement' => 'time', */
+            /*     'units' => [ */
+            /*         ['name' => 'Segundo', 'acronym' => 's'], */
+            /*         ['name' => 'Minuto', 'acronym' => 'min'], */
+            /*         ['name' => 'Hora', 'acronym' => 'h'], */
+            /*         ['name' => 'Día', 'acronym' => 'd'], */
+            /*     ], */
+            /* ], */
+            /* [ */
+            /*     'measurement' => 'temperature', */
+            /*     'units' => [ */
+            /*         ['name' => 'Grado Celsius', 'acronym' => '°C'], */
+            /*         ['name' => 'Grado Fahrenheit', 'acronym' => '°F'], */
+            /*         ['name' => 'Kelvin', 'acronym' => 'K'], */
+            /*     ], */
+            /* ], */
+            /* [ */
+            /*     'measurement' => 'speed', */
+            /*     'units' => [ */
+            /*         ['name' => 'Metro por segundo', 'acronym' => 'm/s'], */
+            /*         ['name' => 'Kilómetro por hora', 'acronym' => 'km/h'], */
+            /*         ['name' => 'Milla por hora', 'acronym' => 'mph'], */
+            /*     ], */
+            /* ], */
+            /* [ */
+            /*     'measurement' => 'pressure', */
+            /*     'units' => [ */
+            /*         ['name' => 'Pascal', 'acronym' => 'Pa'], */
+            /*         ['name' => 'Bar', 'acronym' => 'bar'], */
+            /*         ['name' => 'Atmósfera', 'acronym' => 'atm'], */
+            /*     ], */
+            /* ], */
+            /* [ */
+            /*     'measurement' => 'energy', */
+            /*     'units' => [ */
+            /*         ['name' => 'Julio', 'acronym' => 'J'], */
+            /*         ['name' => 'Kilojulio', 'acronym' => 'kJ'], */
+            /*         ['name' => 'Caloría', 'acronym' => 'cal'], */
+            /*         ['name' => 'Kilovatio-hora', 'acronym' => 'kWh'], */
+            /*     ], */
+            /* ], */
+            /* [ */
+            /*     'measurement' => 'power', */
+            /*     'units' => [ */
+            /*         ['name' => 'Vatio', 'acronym' => 'W'], */
+            /*         ['name' => 'Kilovatio', 'acronym' => 'kW'], */
+            /*         ['name' => 'Caballo de fuerza', 'acronym' => 'hp'], */
+            /*     ], */
+            /* ], */
+            //
             [
-                'type_unit' => 'espesor',
-                'name' => 'Milímetro',
-                'acronime' => 'mm',
-                'isBase' => true,
-            ],
-            [
-                'type_unit' => 'espesor',
-                'name' => 'Centímetro',
-                'acronime' => 'cm',
-                'isBase' => false,
+                'measurement' => 'numero', // referente a contador
+                'units' => [
+                    ['name' => 'unidad', 'acronym' => 'u'],
+                    ['name' => 'Pieza', 'acronym' => 'pz'],
+                    ['name' => 'Docena', 'acronym' => 'doc'],
+                    ['name' => 'par', 'acronym' => 'par'],
+                    ['name' => 'Caja', 'acronym' => 'cja'],
+                    ['name' => 'Paquete', 'acronym' => 'paq'],
+                ],
             ],
         ];
+        foreach ($units as $measurement) {
+            $foundMeasurement = MeasurementUnit::firstOrCreate(
+                ['name' => $measurement['measurement']],
+                ['description' => 'Longitud']
+            );
 
-        // crear los datos de las unidades
-        foreach ($measurementUnits as $unit) {
-            MeasurementUnit::create([
-                'type_unit' => $unit['type_unit'],
-                'name' => $unit['name'],
-                'acronime' => $unit['acronime'],
-                'isBase' => $unit['isBase']
-            ]);
-        }
-
-        $equivalences = [
-            // Peso
-            [
-                'base' => 'Gramo',
-                'equivalent' => 'Kilogramo',
-                'factor' => 1000,
-            ],
-
-            // Longitud
-            [
-                'base' => 'Metro',
-                'equivalent' => 'Centímetro',
-                'factor' => 100,
-            ],
-            [
-                'base' => 'Metro',
-                'equivalent' => 'Milímetro',
-                'factor' => 1000,
-            ],
-
-            // Capacidad
-            [
-                'base' => 'Litro',
-                'equivalent' => 'Mililitro',
-                'factor' => 1000,
-            ],
-
-            // Espesor
-            [
-                'base' => 'Milímetro',
-                'equivalent' => 'Centímetro',
-                'factor' => 10,
-            ],
-        ];
-        // vincular las equivalencias
-        foreach ($equivalences as $equivalence) {
-            $foundBase = MeasurementUnit::where('name', $equivalence['base'])->first();
-
-            $foundEquivalent = MeasurementUnit::where('name', $equivalence['equivalent'])->first();
-
-            Equivalence::create([
-                'base_unit_id' => $foundBase->id,
-                'equivalence_id' => $foundEquivalent->id,
-                'factor' => $equivalence['factor'],
-            ]);
+            foreach ($measurement['units'] as $units) {
+                UnitType::create([
+                    'measurement_unit_id' => $foundMeasurement->id,
+                    'name' =>  $units['name'],
+                    'acronym' => $units['acronym']
+                ]);
+            }
         }
     }
 }

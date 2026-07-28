@@ -14,6 +14,13 @@ class BrandSeeder extends Seeder
                 'path' => null,
                 'isActive' => true,
                 'company_id' => 1,
+                'description' => 'Marca de pegamentos',
+                'name' => 'Kisafix',
+            ],
+            [
+                'path' => null,
+                'isActive' => true,
+                'company_id' => 1,
                 'description' => 'Marca de calzado deportivo',
                 'name' => 'Nike',
             ],
@@ -87,8 +94,9 @@ class BrandSeeder extends Seeder
                 'description' => 'Marca de botas y calzado casual',
                 'name' => 'Ducati',
             ],
+
         ];
-        foreach($brands as $brand){
+        foreach ($brands as $brand) {
             Brand::create($brand);
         }
     }

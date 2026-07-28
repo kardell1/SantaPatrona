@@ -10,15 +10,14 @@ class Equivalence extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['base_unit_id' , 'equivalence_id' , 'factor'];
+    protected $fillable = ['base_unit_id', 'equivalence_id' , 'factor'];
 
     public function baseUnit()
     {
-        return $this->belongsTo(MeasurementUnit::class , 'base_unit_id');
+        return $this->belongsTo(UnitType::class , 'base_unit_id');
     }
-
     public function equivalence()
     {
-        return $this->belongsTo(MeasurementUnit::class , 'equivalence_id');
+        return $this->belongsTo(UnitType::class , 'equivalence_id');
     }
 }

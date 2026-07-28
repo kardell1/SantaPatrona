@@ -9,15 +9,16 @@ class ProductsDatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            CategorySeeder::class,
             SizeSeeder::class,
             ColorSeeder::class,
             MaterialSeeder::class,
             TagSeeder::class,
             StyleSeeder::class,
-            MeasurementUnitSeeder::class,
             BrandSeeder::class,
-            ProductsSeeder::class
+            MeasurementUnitSeeder::class,
+            CategorySeeder::class,
+            ComponentProductSeeder::class,
+            ProductSeeder::class
         ]);
     }
 }

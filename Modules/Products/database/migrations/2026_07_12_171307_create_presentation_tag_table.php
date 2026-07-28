@@ -8,23 +8,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('product_variant_tag', function (Blueprint $table) {
+        Schema::create('presentation_tag', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('product_variant_id');
-            $table->foreign('product_variant_id')->references('id')->on('product_variants');
+            $table->unsignedBigInteger('presentation_id');
+            $table->foreign('presentation_id')->references('id')->on('presentations');
 
             $table->unsignedBigInteger('tag_id');
             $table->foreign('tag_id')->references('id')->on('tags');
-
-
-
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('product_variant_tag');
+        Schema::dropIfExists('presentation_tag');
     }
 };

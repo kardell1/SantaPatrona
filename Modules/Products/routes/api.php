@@ -3,11 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Modules\HumanResources\Http\Controllers\BrandController;
 use Modules\Products\Http\Controllers\CategoryController;
-use Modules\Products\Http\Controllers\ColorController;
-use Modules\Products\Http\Controllers\MaterialController;
 use Modules\Products\Http\Controllers\MeasurementUnitController;
-use Modules\Products\Http\Controllers\ProductsController;
-use Modules\Products\Http\Controllers\ProductVariantController;
+use Modules\Products\Http\Controllers\ProductController;
 use Modules\Products\Http\Controllers\SizeController;
 use Modules\Products\Http\Controllers\StyleController;
 use Modules\Products\Http\Controllers\TagController;
@@ -17,15 +14,15 @@ Route::prefix('v1/core')->group(function () {
     // =====================================================================================
     // =============================== Productos ===========================================
     // =====================================================================================
-    Route::get('products', [ProductVariantController::class, 'index']);
+    Route::get('products', [ProductController::class, 'index']);
     //
-    Route::post('products', [ProductVariantController::class, 'store']);
+    Route::post('products', [ProductController::class, 'store']);
     //
-    Route::get('products/suggestions/{name}', [ProductVariantController::class, 'suggestions']);
+    Route::get('products/suggestions/{name}', [ProductController::class, 'suggestions']);
     //
-    Route::get('products/{product}', [ProductVariantController::class, 'show']);
+    Route::get('products/{product}', [ProductController::class, 'show']);
     //
-    Route::patch('products/{product}', [ProductVariantController::class, 'update']);
+    Route::patch('products/{product}', [ProductController::class, 'update']);
     // =====================================================================================
     // =============================== Marcas ==============================================
     // =====================================================================================
@@ -59,17 +56,17 @@ Route::prefix('v1/core')->group(function () {
     // =============================== Colores =============================================
     // =====================================================================================
 
-    // Todos pueden ver los colores
-    Route::get('colors', [ColorController::class, 'index']);
-    // Solo el administrador puede crear
-    Route::post('colors', [ColorController::class, 'store']);
-    // Visualizar un color
-    Route::get('colors/{color}', [ColorController::class, 'show']);
-    // Actualizar un color
-    Route::patch('colors/{color}', [ColorController::class, 'update']);
-    // Eliminar un color
-    Route::delete('colors/{color}', [ColorController::class, 'destroy']);
-
+    /* // Todos pueden ver los colores */
+    /* Route::get('colors', [ColorController::class, 'index']); */
+    /* // Solo el administrador puede crear */
+    /* Route::post('colors', [ColorController::class, 'store']); */
+    /* // Visualizar un color */
+    /* Route::get('colors/{color}', [ColorController::class, 'show']); */
+    /* // Actualizar un color */
+    /* Route::patch('colors/{color}', [ColorController::class, 'update']); */
+    /* // Eliminar un color */
+    /* Route::delete('colors/{color}', [ColorController::class, 'destroy']); */
+    /**/
     // =====================================================================================
     // =============================== Tallas ==============================================
     // =====================================================================================
@@ -118,17 +115,17 @@ Route::prefix('v1/core')->group(function () {
     // =============================== Materiales ==========================================
     // =====================================================================================
 
-    // Todos pueden ver las categorías
-    Route::get('materials', [MaterialController::class, 'index']);
-    // Solo el administrador puede crear
-    Route::post('materials', [MaterialController::class, 'store']);
-    // Visualizar una categoría
-    Route::get('materials/{material}', [MaterialController::class, 'show']);
-    // Actualizar una categoría
-    Route::patch('materials/{material}', [MaterialController::class, 'update']);
-    // Eliminar una categoría
-    Route::delete('materials/{material}', [MaterialController::class, 'destroy']);
-
+    /* // Todos pueden ver las categorías */
+    /* Route::get('materials', [MaterialController::class, 'index']); */
+    /* // Solo el administrador puede crear */
+    /* Route::post('materials', [MaterialController::class, 'store']); */
+    /* // Visualizar una categoría */
+    /* Route::get('materials/{material}', [MaterialController::class, 'show']); */
+    /* // Actualizar una categoría */
+    /* Route::patch('materials/{material}', [MaterialController::class, 'update']); */
+    /* // Eliminar una categoría */
+    /* Route::delete('materials/{material}', [MaterialController::class, 'destroy']); */
+    /**/
     // =====================================================================================
     // =============================== Unidades de medicion ================================
     // =====================================================================================
@@ -153,5 +150,4 @@ Route::prefix('v1/core')->group(function () {
 
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('products', ProductsController::class)->names('products');
 });

@@ -8,20 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('products', function (Blueprint $table) {
+        Schema::create('category_component_product', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
             $table->unsignedBigInteger('category_id');
-            $table->enum('gender' , ['male' , 'female' , 'both' , 'none' ]);
             $table->foreign('category_id')->references('id')->on('categories');
-            // aumentar mas campos de ser necesario
-            $table->enum('status' , ['enable' , 'disabled'])->default('enable');
-           $table->timestamps();
+
+            $table->unsignedBigInteger('component_product_id');
+            $table->foreign('component_product_id')->references('id')->on('component_products');
+            $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('products');
+        Schema::dropIfExists('category_component_product');
     }
 };

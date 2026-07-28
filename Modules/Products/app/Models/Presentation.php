@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Modules\Products\Database\Factories\ProductVariantFactory;
 
-class ProductVariant extends Model
+class Presentation extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['product_id' , 'name' , 'sold_suggest' ];
+    protected $fillable = ['product_id' , 'presentation' , 'sold_suggest' ];
 
     public function product()
     {
@@ -21,13 +21,14 @@ class ProductVariant extends Model
     {
         return $this->belongsToMany(Tag::class);
     }
+
     public function sizes()
     {
         return $this->belongsToMany(Size::class);
     }
 
-    public function measuryUnits()
+    public function specifications()
     {
-        return $this->belongsToMany(MeasurementUnit::class);
+        return $this->hasMany(Specification::class);
     }
 }

@@ -18,9 +18,9 @@ class ProductFilters
         return [
 
             'name' => [
-                'relation' => 'productVariants.tags',
+                'relation' => 'presentations',
                 'callback' =>   fn($query, $value) =>
-                $query->where('name', 'ilike', "%{$value}%")
+                $query->where('presentation', 'ilike', "%{$value}%")
             ],
 
             'category' => [
@@ -30,22 +30,22 @@ class ProductFilters
             ],
 
             'tag' => [
-                'relation' => 'productVariants.tags',
+                'relation' => 'presentations.tags',
                 'callback' =>   fn($query, $value) =>
-                $query->whereHas('productVariants.tags', fn($query) => $query->where('tag_id', $value)),
+                $query->whereHas('presentations.tags', fn($query) => $query->where('tag_id', $value)),
             ],
 
-            'color' => [
-                'relation' => 'colors',
-                'callback' =>   fn($query, $value) =>
-                $query->whereHas('colors', fn($query) => $query->where('color_id', $value)),
-            ],
-
+            /* 'color' => [ */
+            /*     'relation' => 'colors', */
+            /*     'callback' =>   fn($query, $value) => */
+            /*     $query->whereHas('colors', fn($query) => $query->where('color_id', $value)), */
+            /* ], */
+            /**/
             'material' => [
-                'relation' => 'materials',
+                'relation' => 'compositionProducts.material',
                 'callback' =>
                 fn($query, $value) =>
-                $query->whereHas('materials', fn($query) => $query->where('material_id', $value)),
+                $query->whereHas('material', fn($query) => $query->where('material_id', $value)),
             ],
 
             'style' => [
@@ -59,15 +59,15 @@ class ProductFilters
                 $query->whereHas('brand', fn($query) => $query->where('brand_id', $value))
             ],
             'price' => [
-                'relation' => 'productVariants',
+                'relation' => 'presentations',
                 'callback' =>  fn($query, $value) =>
-                $query->whereHas('productVariants', fn($query) => $query->where('sold_suggest', $value))
+                $query->whereHas('presentations', fn($query) => $query->where('sold_suggest', $value))
             ],
-            'size' => [
-                'relation' => 'productVariants.sizes',
-                'callback' =>  fn($query, $value) =>
-                $query->whereHas('productVariants.sizes', fn($query) => $query->where('size_id', $value))
-            ],
+            /* 'size' => [ */
+            /*     'relation' => 'presentations.sizes', */
+            /*     'callback' =>  fn($query, $value) => */
+            /*     $query->whereHas('presentations.sizes', fn($query) => $query->where('size_id', $value)) */
+            /* ], */
         ];
     }
 
@@ -92,11 +92,11 @@ class ProductFilters
         // aplicamos las relaciones
         //$query->with(array_unique($relations));
         $query->with([
-            'productVariants:id,name,sold_suggest,product_id',
-            'productVariants.sizes:id,size',
-            'productVariants.tags:id,name',
-            'colors:id,name',
-            'materials:id,name',
+            'presentations:id,presentation,sold_suggest,product_id',
+            /* 'presentations.sizes:id,size', */
+            'presentations.tags:id,name',
+            /* 'colors:id,name', */
+            'compositionProducts.material:id,name',
             'styles:id,name',
             'category:id,name',
             'brand:id,name'

@@ -5,7 +5,7 @@ namespace Modules\Products\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class MeasurementUnitController extends Controller
+class UnitTypeController extends Controller
 {
     /**
      * Display a listing of the resource.

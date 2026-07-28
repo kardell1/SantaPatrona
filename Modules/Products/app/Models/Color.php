@@ -12,9 +12,9 @@ class Color extends Model
 
     protected $fillable = ['name' , 'hexa' , 'description'];
     protected $hidden = ['pivot'];
-    public function productVariants()
+    public function compositionProducts()
     {
-        return $this->hasMany(ProductVariant::class);
+        return $this->hasMany(CompositionProduct::class);
     }
 
 }

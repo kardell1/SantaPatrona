@@ -10,27 +10,10 @@ class MeasurementUnit extends Model
 {
     use HasFactory;
 
-    // el is base para q?
-    protected $fillable = ['type_unit', 'name', 'acronime', 'isBase'];
+    protected $fillable = ['name' , 'description'];
 
-    public function productVariants()
+    public function unitTypes()
     {
-        return $this->belongsToMany(ProductVariant::class);
-    }
-
-    public function baseEquivalences()
-    {
-        return $this->hasMany(
-            Equivalence::class,
-            'base_unit_id'
-        );
-    }
-
-    public function equivalentEquivalences()
-    {
-        return $this->hasMany(
-            Equivalence::class,
-            'equivalence_id'
-        );
+        return $this->hasMany(UnitType::class);
     }
 }

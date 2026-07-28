@@ -12,8 +12,9 @@ class Material extends Model
 
     protected $fillable = ['name' , 'description'];
     protected $hidden = ['pivot'];
-    public function productVariants()
+
+    public function compositionProducts()
     {
-        return $this->belongsToMany(ProductVariant::class);
+        return $this->hasMany(CompositionProduct::class);
     }
 }

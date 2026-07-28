@@ -10,10 +10,11 @@ return new class extends Migration
     {
         Schema::create('measurement_units', function (Blueprint $table) {
             $table->id();
-            $table->enum('type_unit', ['peso', 'longitud', 'capacidad', 'espesor']); //
-            $table->string('name');
-            $table->string('acronime');
-            $table->boolean('isBase')->default(false); // para saber si es la base
+            // unidades de medicion
+            // por ejemplo : Longitud , Peso , Capacidad
+            // Magnitudes fisicas que hacen referencia a unidades
+            $table->string('name')->unique();
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }

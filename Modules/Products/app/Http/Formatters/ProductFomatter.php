@@ -22,13 +22,14 @@ class ProductFomatter
                 'gender' => $product->gender,
                 'brand' => $product->brand->name,
                 'stock' => '0',
-                'variation' => $product->productVariants->map(fn($variant) => [
-                    'name' => $variant->name ?? '',
+                'presentations' => $product->presentations->map(fn($variant) => [
+                    'presentation' => $variant->presentation ?? '',
                     'sold_suggest' => $variant->sold_suggest,
                 ]),
                 'materials' => $product->materials->map(fn($item) => $item->name),
-                'colors' => $product->colors->map(fn($item) => $item->name),
-                'sizes' => $sizes,
+                'composition' => $product->compositionProducts->map(fn($composition)=>[
+
+                ])
             ];
         });
         return $clean;

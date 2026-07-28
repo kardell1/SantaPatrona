@@ -19,7 +19,10 @@ class MaterialSeeder extends Seeder
             "Nobuck",
             "PVC",
             "Goma",
-            "EVA"
+            "EVA",
+            'aluminio',
+            'algodon',
+            'plastico'
         ];
         foreach($materials as $material){
             Material::create([

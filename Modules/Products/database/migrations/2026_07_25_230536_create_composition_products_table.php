@@ -8,21 +8,26 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('material_product', function (Blueprint $table) {
+        Schema::create('composition_products', function (Blueprint $table) {
             $table->id();
-
             $table->unsignedBigInteger('product_id');
             $table->foreign('product_id')->references('id')->on('products');
+
+            $table->unsignedBigInteger('component_product_id');
+            $table->foreign('component_product_id')->references('id')->on('component_products');
 
             $table->unsignedBigInteger('material_id');
             $table->foreign('material_id')->references('id')->on('materials');
 
+            $table->string('factor')->default('100%');
+            $table->string('description')->nullable();
             $table->timestamps();
+
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('material_product');
+        Schema::dropIfExists('composition_products');
     }
 };

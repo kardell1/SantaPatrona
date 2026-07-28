@@ -6,16 +6,78 @@ use App\Http\Controllers\Controller;
 use App\Http\Supports\NormalizedResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Modules\Products\Filters\ProductFilters;
+use Modules\Products\Http\Formatters\ProductFomatter;
 use Modules\Products\Http\Requests\ProductStoreRequest;
+use Modules\Products\Models\Presentation;
 use Modules\Products\Models\Product;
-use Modules\Products\Models\ProductDetail;
-use Modules\Products\Models\ProductVariant;
 
 class ProductController extends Controller
 {
-    public function index()
+    protected $productFilters;
+    protected $productFormatter;
+    public function __construct(
+        ProductFilters $productFilters,
+        ProductFomatter $productFomatter
+    ) {
+        $this->productFilters = $productFilters;
+        $this->productFormatter = $productFomatter;
+    }
+    // tag ,color , material , style ,brand , price , size
+    public function index(Request $request)
     {
-        return view('products::index');
+        try {
+            $paginate = $request->input('paginate', 15);
+            $query = Product::query();
+
+            $query = $this->productFilters->apply(
+                $query->select('id', 'name', 'status', 'gender', 'category_id', 'brand_id'),
+                $request->all()
+            );
+
+            $products = $query->paginate($paginate);
+            //$formatter = $query->get();
+            //$formatter = $this->productFormatter->cleanIndexProduct($query->get());
+            $products->setCollection(
+                $this->productFormatter->cleanIndexProduct($products->getCollection())
+            );
+            return NormalizedResponse::successPaginated(
+                $products,
+                "Busqueda de productos"
+            );
+        } catch (\Throwable $e) {
+            return NormalizedResponse::error(
+                [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ],
+                'Metodo ha fallado'
+            );
+        }
+    }
+
+    public function suggestions(string $name)
+    {
+        try {
+            $data = Product::query()
+                ->where('name', 'ilike', "%{$name}%")
+                /* ->orWhereHas('productVariants', function ($query) use ($name) { */
+                /*     $query->where('name', 'ilike', "%{$name}%"); */
+                /* }) */
+                ->limit(10)
+                ->get('name');
+
+            return NormalizedResponse::success(
+                $data,
+                'Búsqueda exitosa.'
+            );
+        } catch (\Throwable $e) {
+            return NormalizedResponse::error(
+                $e->getMessage(),
+                'Ocurrió un error al realizar la búsqueda.',
+            );
+        }
     }
 
     public function store(ProductStoreRequest $request)
@@ -26,38 +88,43 @@ class ProductController extends Controller
             $validated = $request->validated();
             // aca tambien comprobar permisos
             $data = DB::transaction(function () use ($validated) {
-                $newProduct = Product::create([
+                // first or create para el producto principal
+                $foundProduct = Product::firstOrCreate([
                     'name' => $validated['name'],
+                    'gender' => $validated['gender'],
+                    'brand_id' => $validated['brand_id'],
+                    'category_id' => $validated['category_id']
+                ], [
+                    'status' => $validated['status'],
+                    'name' => $validated['name'],
+                    'gender' => $validated['gender'],
+                    'brand_id' => $validated['brand_id'],
                     'category_id' => $validated['category_id']
                 ]);
-                // sino tiene variantes copiamos el mismo nombre
-                $newVariant = ProductVariant::create([
-                    'product_id' => $newProduct->id,
-                    'name' => $validated['variant_name'],
-                    'divisions' => $validated['divisions'] ?? null,
-                    'sold_suggest_price' => $validated['variant_sold_suggest_price'],
-                    'status' => $validated['status']
+
+                $newPresentation = Presentation::create([
+                    'product_id' => $foundProduct->id,
+                    'presentation' => $validated['presentation'],
+                    'sold_suggest' => $validated['sold_suggest']
                 ]);
 
-                // Asociar materiales
-                $newProduct->materials()->attach($validated['materials']);
-                // Asociar colores
-                $newProduct->colors()->attach($validated['colors']);
-                // Asociar tallas
-                $newVariant->sizes()->attach($validated['sizes']);
-                // Asociar estilos
-                $newProduct->styles()->attach($validated['styles']);
-                // Asociar tags
-                $newVariant->tags()->attach($validated['tags']);
+                $cleanComponents = [];
+                foreach ($validated['components'] as $component) {
+                    $cleanComponents[] = [
+                        'component_product_id' => $component['component_id'],
+                        'material_id' => $component['material_id'],
+                        'factor' => $component['factor'],
+                        'description' => $component['description']
+                    ];
+                }
+                // detalles de componentes del producto
+                $foundProduct->compositionProducts()->createMany($cleanComponents);
+                // detalles de especificacion
+                $newPresentation->specifications()->createMany($validated['details']);
 
-                // Crear detalle de producto
-                ProductDetail::create([
-                    'product_variant_id' => $newVariant->id,
-                    'unity' => $validated['unity'],
-                    'unity_type' => $validated['unity_type'],
-                    'description' => $validated['description']
-                ]);
-                // falta la funcion para agregar la imagen o vincularla
+                $foundProduct->styles()->attach($validated['styles']);
+
+                $newPresentation->tags()->attach($validated['tags']);
             });
 
             return NormalizedResponse::success($data, 'Creado correctamente');
