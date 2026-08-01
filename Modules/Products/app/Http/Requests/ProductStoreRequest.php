@@ -13,7 +13,7 @@ class ProductStoreRequest extends FormRequest
             'name' => 'required|string|max:50',
             'presentation' => 'nullable|string|min:2|max:100',
             'category_id' => 'required|integer|exists:categories,id',
-            'brand_id' => 'required|integer|exists:people,id',
+            'brand_id' => 'required|integer|exists:brands,id',
             'sold_suggest' => 'required|numeric|min:0',
             'gender' => 'nullable|in:none,female,male,both',
             // Agregar estilos y etiquetas

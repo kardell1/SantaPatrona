@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('component_product_id');
             $table->foreign('component_product_id')->references('id')->on('component_products');
 
-            $table->unsignedBigInteger('material_id');
+            $table->unsignedBigInteger('material_id')->nullable();
             $table->foreign('material_id')->references('id')->on('materials');
 
             $table->string('factor')->default('100%');

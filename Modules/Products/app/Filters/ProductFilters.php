@@ -97,6 +97,7 @@ class ProductFilters
             'presentations.tags:id,name',
             /* 'colors:id,name', */
             'compositionProducts.material:id,name',
+            'compositionProducts.componentProduct:id,name',
             'styles:id,name',
             'category:id,name',
             'brand:id,name'

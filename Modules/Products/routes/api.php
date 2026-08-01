@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\HumanResources\Http\Controllers\BrandController;
 use Modules\Products\Http\Controllers\CategoryController;
+use Modules\Products\Http\Controllers\MaterialController;
 use Modules\Products\Http\Controllers\MeasurementUnitController;
 use Modules\Products\Http\Controllers\ProductController;
 use Modules\Products\Http\Controllers\SizeController;
@@ -10,6 +11,7 @@ use Modules\Products\Http\Controllers\StyleController;
 use Modules\Products\Http\Controllers\TagController;
 
 Route::prefix('v1/core')->group(function () {
+    // Mover colores , tallas hacia el modulo de inventarios
 
     // =====================================================================================
     // =============================== Productos ===========================================
@@ -116,16 +118,16 @@ Route::prefix('v1/core')->group(function () {
     // =====================================================================================
 
     /* // Todos pueden ver las categorías */
-    /* Route::get('materials', [MaterialController::class, 'index']); */
-    /* // Solo el administrador puede crear */
-    /* Route::post('materials', [MaterialController::class, 'store']); */
-    /* // Visualizar una categoría */
-    /* Route::get('materials/{material}', [MaterialController::class, 'show']); */
-    /* // Actualizar una categoría */
-    /* Route::patch('materials/{material}', [MaterialController::class, 'update']); */
-    /* // Eliminar una categoría */
-    /* Route::delete('materials/{material}', [MaterialController::class, 'destroy']); */
-    /**/
+    Route::get('materials', [MaterialController::class, 'index']);
+    // Solo el administrador puede crear
+    Route::post('materials', [MaterialController::class, 'store']);
+    // Visualizar una categoría
+    Route::get('materials/{material}', [MaterialController::class, 'show']);
+    // Actualizar una categoría
+    Route::patch('materials/{material}', [MaterialController::class, 'update']);
+    // Eliminar una categoría
+    Route::delete('materials/{material}', [MaterialController::class, 'destroy']);
+
     // =====================================================================================
     // =============================== Unidades de medicion ================================
     // =====================================================================================

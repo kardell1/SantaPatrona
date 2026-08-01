@@ -10,25 +10,28 @@ class ProductFomatter
 
         $clean = $form->map(function ($product) {
 
-            $sizes = $product->productVariants
-                ->flatMap(fn($variant) => $variant->sizes?->pluck('size'))
-                ->unique()
-                ->values();
-
+            /* $sizes = $product->productVariants */
+            /*     ->flatMap(fn($variant) => $variant->sizes?->pluck('size')) */
+            /*     ->unique() */
+            /*     ->values(); */
+            /**/
             return [
                 'id' => $product->id,
                 'name' => $product->name,
                 'status' => $product->status,
                 'gender' => $product->gender,
                 'brand' => $product->brand->name,
+                'category' => $product->category->name,
                 'stock' => '0',
-                'presentations' => $product->presentations->map(fn($variant) => [
+                'presentations' => $product->presentations?->map(fn($variant) => [
                     'presentation' => $variant->presentation ?? '',
                     'sold_suggest' => $variant->sold_suggest,
                 ]),
-                'materials' => $product->materials->map(fn($item) => $item->name),
-                'composition' => $product->compositionProducts->map(fn($composition)=>[
-
+                'composition' => $product->compositionProducts?->map(fn($composition)=>[
+                    'material' => $composition->material?->name,
+                    'factor' => $composition->factor,
+                    'description' => $composition->description,
+                    'component' => $composition->componentProduct?->name
                 ])
             ];
         });
