@@ -2,15 +2,16 @@
 
 namespace Modules\Products\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
 // use Modules\Products\Database\Factories\ProductVariantFactory;
 
 class Presentation extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['product_id' , 'presentation' , 'sold_suggest' ];
+    protected $fillable = ['product_id', 'presentation', 'sold_suggest'];
 
     public function product()
     {

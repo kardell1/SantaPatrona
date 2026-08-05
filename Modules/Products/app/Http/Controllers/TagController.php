@@ -20,6 +20,26 @@ class TagController extends Controller
         );
     }
 
+    public function suggestions(string $name)
+    {
+        try {
+            $data = Tag::query()
+                ->where('name', 'ilike', "%{$name}%")
+                ->limit(10)
+                ->get('name');
+
+            return NormalizedResponse::success(
+                $data,
+                'Búsqueda exitosa.'
+            );
+        } catch (\Throwable $e) {
+            return NormalizedResponse::error(
+                $e->getMessage(),
+                'Ocurrió un error al realizar la búsqueda.',
+            );
+        }
+    }
+
     public function store(Request $request)
     {
         try {
@@ -42,7 +62,7 @@ class TagController extends Controller
             );
 
             $data = DB::transaction(function () use ($validated) {
-            return Tag::create($validated);
+                return Tag::create($validated);
             });
 
             return NormalizedResponse::success(

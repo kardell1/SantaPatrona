@@ -11,33 +11,59 @@ class PermissionSeeder extends Seeder
     {
         $permissions = [
             [
-                'code' => 'read', // show
-                'label' => 'Lectura'
-            ],
+                'code' => 'read', // GET /{id}
+                'label' => 'Lectura',
+            ], // Ver el detalle de un registro.
+
             [
-                'code' => 'reports', // reportes
-                'label' => 'Reportes'
-            ],
+                'code' => 'list', // GET /
+                'label' => 'Listado',
+            ], // Listar y buscar registros.
+
             [
-                'code' => 'create', // creacion
-                'label' => 'Creacion'
-            ],
+                'code' => 'create', // POST
+                'label' => 'Creación',
+            ], // Crear nuevos registros.
+
             [
-                'code' => 'update', // actualizacion
-                'label' => 'Edicion'
-            ],
+                'code' => 'update', // PUT/PATCH
+                'label' => 'Edición',
+            ], // Modificar registros existentes.
+
             [
-                'code' => 'print', // imprimir
-                'label' => 'imprimir'
-            ],
+                'code' => 'delete', // DELETE
+                'label' => 'Eliminación',
+            ], // Eliminar registros.
+
             [
-                'code' => 'download', // descargar
-                'label' => 'Descargar'
-            ],
+                'code' => 'reports',
+                'label' => 'Reportes',
+            ], // Acceder y generar reportes del módulo.
+
             [
-                'code' => 'list', // listar tod
-                'label' => 'Listado'
-            ],
+                'code' => 'print',
+                'label' => 'Imprimir',
+            ], // Imprimir documentos o reportes.
+
+            [
+                'code' => 'download',
+                'label' => 'Descargar',
+            ], // Exportar información (PDF, Excel, CSV, etc.).
+
+            [
+                'code' => 'approve',
+                'label' => 'Aprobar',
+            ], // Aprobar documentos o procesos (cotizaciones, órdenes, solicitudes, etc.).
+
+            [
+                'code' => 'cancel',
+                'label' => 'Cancelar',
+            ], // Cancelar documentos sin eliminarlos del sistema.
+
+            [
+                'code' => 'restore',
+                'label' => 'Restaurar',
+            ], // Restaurar registros eliminados lógicamente (soft delete).
         ];
         foreach ($permissions as $permission) {
             $newPermission = Permission::create($permission);

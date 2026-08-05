@@ -8,6 +8,9 @@ class ProductStoreRequest extends FormRequest
 {
     public function rules(): array
     {
+        // nunit type es de tipo name
+        // tags de formato name
+        // styles es de tipo name
         return [
             // informacion general
             'name' => 'required|string|max:50',
@@ -18,10 +21,10 @@ class ProductStoreRequest extends FormRequest
             'gender' => 'nullable|in:none,female,male,both',
             // Agregar estilos y etiquetas
             'styles' => 'array',
-            'styles.*' => 'integer|exists:styles,id',
+            'styles.*' => 'exists:styles,name',
 
             'tags' => 'array',
-            'tags.*' => 'integer|exists:tags,id',
+            'tags.*' => 'exists:tags,name',
             // complementos adicionales
             'components' => 'array',
             'components.*.component_id' => 'required|exists:component_products,id',
@@ -31,7 +34,7 @@ class ProductStoreRequest extends FormRequest
             // detalles tecnicos
             'details' => 'array',
             'details.*.name' => 'string|max:100',
-            'details.*.unit_type_id' => 'integer|exists:unit_types,id',
+            'details.*.unit_type' => 'exists:unit_types,name',
             'details.*.amount' => 'string|max:5',
             // seccion de vinculacion con tags
             'status' => 'required|in:enable,disable',

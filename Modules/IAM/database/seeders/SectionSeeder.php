@@ -9,67 +9,113 @@ class SectionSeeder extends Seeder
 {
     public function run(): void
     {
-
-        // dominios del sistema
-        // Empleados
-        // Configuracion
         $sections = [
+            // ===========================================================================================
+            // =================================== Recursos humanos ======================================
+            // ===========================================================================================
+
             [
                 'code' => 'human-resources', // sub seccion de ingreso
                 'label' => 'Empleados', // lo que mostramos visualmente
                 'path' => 'rrhh', // este campo quizas no sea necesario
                 'father' => null, // a que seccion perteneces
-                'icon' => 'people'
+                'icon' => 'people',
             ],
             [
                 'code' => 'employees', // sub seccion de ingreso
                 'label' => 'Internos',
                 'path' => 'rrhh', // este campo quizas no sea necesario
                 'father' => 'human-resources', // a que seccion perteneces
-                'icon' => 'people'
+                'icon' => 'people',
             ],
             [
                 'code' => 'rrhh-config',
                 'label' => 'Configuracion',
                 'path' => 'rrhh',
                 'father' => 'human-resources',
-                'icon' => 'people'
+                'icon' => 'people',
+            ],
+
+            // ===========================================================================================
+            // =================================== Inventarios  ==========================================
+            // ===========================================================================================
+            [
+                'code' => 'inventories',
+                'label' => 'Inventarios',
+                'path' => 'inventories',
+                'father' => null,
+                'icon' => 'cash',
             ],
             [
-                'code' => 'third-persons',
-                'label' => 'Asociados',
-                'father' => 'human-resources',
-                'path' => 'rrhh',
-                'icon' => 'people'
-            ],
-            [
-                'code' => 'inventories', // sub seccion de ingreso
-                'label' => 'Inventarios', // lo que mostramos visualmente
-                'path' => 'inventories', // este campo quizas no sea necesario
-                'father' => null, // a que seccion perteneces
-                'icon' => 'cash'
-            ],
-            [
-                'code' => 'products', // sub seccion de ingreso
+                'code' => 'products',
                 'label' => 'Productos',
-                'path' => 'rrhh', // este campo quizas no sea necesario
-                'father' => 'inventories', // a que seccion perteneces
-                'icon' => null
+                'path' => 'inventories',
+                'father' => 'inventories',
+                'icon' => null,
             ],
             [
-                'code' => 'transfer-inventories',
-                'label' => 'Transferir items',
-                'path' => 'rrhh',
+                'code' => 'branches',
+                'label' => 'Sucursales',
+                'path' => 'inventories',
                 'father' => 'inventories',
-                'icon' => null
+                'icon' => null,
             ],
             [
                 'code' => 'inventories-config',
                 'label' => 'Configuracion',
                 'father' => 'inventories',
-                'path' => 'rrhh',
-                'icon' => null
+                'path' => 'inventories',
+                'icon' => null,
             ],
+            // ===========================================================================================
+            // =================================== Ordenes ===============================================
+            // ===========================================================================================
+            [
+                'code' => 'orders',
+                'label' => 'Ordenes de compra',
+                'path' => 'orders',
+                'father' => null,
+                'icon' => 'purchaseOrders',
+            ],
+            [
+                'code' => 'providers',
+                'label' => 'Proveedores',
+                'path' => 'orders',
+                'father' => 'orders',
+                'icon' => null,
+            ],
+            [
+                'code' => 'orders-config',
+                'label' => 'Configuracion',
+                'father' => 'orders',
+                'path' => 'orders',
+                'icon' => null,
+            ],
+            // ===========================================================================================
+            // =================================== Cotizaciones ==========================================
+            // ===========================================================================================
+            [
+                'code' => 'quotations',
+                'label' => 'Cotizaciones',
+                'path' => 'quotations',
+                'father' => null,
+                'icon' => 'quotations',
+            ],
+            [
+                'code' => 'clients',
+                'label' => 'Clientes',
+                'path' => 'quotations',
+                'father' => 'quotations',
+                'icon' => null,
+            ],
+            [
+                'code' => 'quotations-config',
+                'label' => 'Configuracion',
+                'father' => 'quotations',
+                'path' => 'quotations',
+                'icon' => null,
+            ],
+
         ];
         foreach ($sections as $uiSection) {
 
@@ -83,7 +129,7 @@ class SectionSeeder extends Seeder
                 'label' => $uiSection['label'],
                 'icon' => $uiSection['icon'],
                 'father_id' => $foundFather?->id,
-                'path' => $uiSection['path']
+                'path' => $uiSection['path'],
             ]);
 
         }

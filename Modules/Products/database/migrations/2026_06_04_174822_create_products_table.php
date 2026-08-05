@@ -12,11 +12,11 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->unsignedBigInteger('category_id');
-            $table->enum('gender' , ['male' , 'female' , 'both' , 'none' ]);
+            $table->enum('gender', ['male', 'female', 'both', 'none']);
             $table->foreign('category_id')->references('id')->on('categories');
             // aumentar mas campos de ser necesario
-            $table->enum('status' , ['enable' , 'disabled'])->default('enable');
-           $table->timestamps();
+            $table->enum('status', ['enable', 'disabled'])->default('enable');
+            $table->timestamps();
         });
     }
 

@@ -11,11 +11,15 @@ use Modules\Products\Http\Formatters\ProductFomatter;
 use Modules\Products\Http\Requests\ProductStoreRequest;
 use Modules\Products\Models\Presentation;
 use Modules\Products\Models\Product;
+use Modules\Products\Models\Tag;
+use Modules\Products\Models\UnitType;
 
 class ProductController extends Controller
 {
     protected $productFilters;
+
     protected $productFormatter;
+
     public function __construct(
         ProductFilters $productFilters,
         ProductFomatter $productFomatter
@@ -23,6 +27,7 @@ class ProductController extends Controller
         $this->productFilters = $productFilters;
         $this->productFormatter = $productFomatter;
     }
+
     // tag ,color , material , style ,brand , price , size
     public function index(Request $request)
     {
@@ -36,14 +41,15 @@ class ProductController extends Controller
             );
 
             $products = $query->paginate($paginate);
-            //$formatter = $query->get();
-            //$formatter = $this->productFormatter->cleanIndexProduct($query->get());
+            // $formatter = $query->get();
+            // $formatter = $this->productFormatter->cleanIndexProduct($query->get());
             $products->setCollection(
                 $this->productFormatter->cleanIndexProduct($products->getCollection())
             );
+
             return NormalizedResponse::successPaginated(
                 $products,
-                "Busqueda de productos"
+                'Busqueda de productos'
             );
         } catch (\Throwable $e) {
             return NormalizedResponse::error(
@@ -93,19 +99,19 @@ class ProductController extends Controller
                     'name' => $validated['name'],
                     'gender' => $validated['gender'],
                     'brand_id' => $validated['brand_id'],
-                    'category_id' => $validated['category_id']
+                    'category_id' => $validated['category_id'],
                 ], [
                     'status' => $validated['status'],
                     'name' => $validated['name'],
                     'gender' => $validated['gender'],
                     'brand_id' => $validated['brand_id'],
-                    'category_id' => $validated['category_id']
+                    'category_id' => $validated['category_id'],
                 ]);
 
                 $newPresentation = Presentation::create([
                     'product_id' => $foundProduct->id,
                     'presentation' => $validated['presentation'],
-                    'sold_suggest' => $validated['sold_suggest']
+                    'sold_suggest' => $validated['sold_suggest'],
                 ]);
 
                 $cleanComponents = [];
@@ -114,22 +120,34 @@ class ProductController extends Controller
                         'component_product_id' => $component['component_id'],
                         'material_id' => $component['material_id'],
                         'factor' => $component['factor'],
-                        'description' => $component['description']
+                        'description' => $component['description'],
                     ];
                 }
                 // detalles de componentes del producto
                 $foundProduct->compositionProducts()->createMany($cleanComponents);
                 // detalles de especificacion
-                $newPresentation->specifications()->createMany($validated['details']);
+                $details = collect($validated['details'])->map(function ($item) {
+                    return [
+                        'name' => $item['name'],
+                        'unit_type_id' => UnitType::where('name', $item['unit_type'])->value('id'),
+                        'amount' => $item['amount'],
+                    ];
+                })->toArray();
+
+                $tags = Tag::whereIn('name', $validated['tags'])
+                    ->pluck('id')
+                    ->toArray();
+
+                $newPresentation->specifications()->createMany($details);
 
                 $foundProduct->styles()->attach($validated['styles']);
 
-                $newPresentation->tags()->attach($validated['tags']);
+                $newPresentation->tags()->attach($tags);
             });
 
             return NormalizedResponse::success($data, 'Creado correctamente');
         } catch (\Throwable $th) {
-            return NormalizedResponse::error("Errores al crear", $th->getMessage());
+            return NormalizedResponse::error('Errores al crear', $th->getMessage());
         }
     }
 

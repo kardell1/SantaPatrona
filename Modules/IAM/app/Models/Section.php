@@ -2,15 +2,16 @@
 
 namespace Modules\IAM\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
 // use Modules\IAM\Database\Factories\SectionFactory;
 
 class Section extends Model
 {
     use HasFactory;
 
-    protected $fillable = [ 'location', 'name' , 'code','icon','father_id','path'];
+    protected $fillable = ['location', 'name', 'code', 'icon', 'father_id', 'path'];
 
     public function roles()
     {
@@ -21,5 +22,4 @@ class Section extends Model
     {
         return $this->belongsToMany(Permission::class);
     }
-
 }

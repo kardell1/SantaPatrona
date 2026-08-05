@@ -3,54 +3,50 @@
 namespace Modules\Products\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Supports\NormalizedResponse;
 use Illuminate\Http\Request;
+use Modules\Products\Models\UnitType;
 
 class UnitTypeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return view('products::index');
+        $data = UnitType::all();
+
+        return NormalizedResponse::success(
+            $data,
+            'Consulta exitosa.'
+        );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function suggestions(string $name)
     {
-        return view('products::create');
+        try {
+            $data = UnitType::query()
+                ->where('name', 'ilike', "%{$name}%")
+                ->limit(10)
+                ->get(['name', 'id', 'acronym']);
+
+            return NormalizedResponse::success(
+                $data,
+                'Búsqueda exitosa.'
+            );
+        } catch (\Throwable $e) {
+            return NormalizedResponse::error(
+                $e->getMessage(),
+                'Ocurrió un error al realizar la búsqueda.',
+            );
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request) {}
 
-    /**
-     * Show the specified resource.
-     */
     public function show($id)
     {
         return view('products::show');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        return view('products::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id) {}
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id) {}
 }

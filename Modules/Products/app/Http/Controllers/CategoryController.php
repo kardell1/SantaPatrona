@@ -22,6 +22,21 @@ class CategoryController extends Controller
 
     }
 
+    public function components(Category $category)
+    {
+        $data = $category->load('componentProducts');
+        $clean = $data->componentProducts?->map(fn ($item) => [
+            'id' => $item->id,
+            'name' => $item->name,
+        ]);
+
+        return NormalizedResponse::success(
+            $clean,
+            'Consulta exitosa.'
+        );
+
+    }
+
     public function store(Request $request)
     {
         try {
